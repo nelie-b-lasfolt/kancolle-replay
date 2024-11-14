@@ -107,10 +107,16 @@ var UI_MAIN = Vue.createApp({
 			arcticCamoAr: SIMCONSTS.arcticCamoAr,
 			arcticCamoEva: SIMCONSTS.arcticCamoEva,
 			bucketPercent: BUCKETPERCENT*100,
+			bucketPercentList: BUCKETPERCENTLIST.map(x => x * 100),
 			bucketTime: BUCKETTIME/3600,
 			bucketTimeIgnore: 0,
 			carryOverHP: CARRYOVERHP,
 			carryOverMorale: CARRYOVERMORALE,
+			resourceNode: 0,
+			getFuel: 0,
+			getAmmo: 0,
+			getSteal: 0,
+			getBaux: 0,
 			enableSkipTorpBonus: SIMCONSTS.enableSkipTorpBonus,
 			airstrikeDmgMF: SIMCONSTS.airstrikeDmgMF,
 			airstrikeDmgMFRaid: SIMCONSTS.airstrikeDmgMFRaid,
@@ -205,6 +211,8 @@ var UI_MAIN = Vue.createApp({
 			fuelHP: 0, ammoHP: 0, steelHP: 0, bauxHP: 0, bucketHP: 0, dameconHP: 0, underwayHP: 0,
 			fuelTP: 0, ammoTP: 0, steelTP: 0, bauxTP: 0, bucketTP: 0, dameconTP: 0, underwayTP: 0,
 			perHPRes: 1, perTPRes: 1,
+			totalActions: 0, totalActionsS: 0, actions: [],
+			totalNBs: 0
 		},
 		
 		lang: 'en',
@@ -519,72 +527,7 @@ var UI_MAIN = Vue.createApp({
 			this.results.flagSunkHPBoss = formatNum(resultSim.totalGaugeDamage / nodeLast.num);
 			this.results.transport = formatNum(resultSim.totalTransport / totalNum);
 			this.results.canAdvanceAfter = formatNum(resultSim.totalCanAdvanceAfter / totalNum);
-			
-			this.results.fuelSupply = formatNum(resultSim.totalFuelS / totalNum);
-			this.results.ammoSupply = formatNum(resultSim.totalAmmoS / totalNum);
-			this.results.bauxSupply = formatNum(resultSim.totalBauxS / totalNum);
-			this.results.fuelRepair = formatNum(resultSim.totalFuelR / totalNum);
-			this.results.steelRepair = formatNum(resultSim.totalSteelR / totalNum);
-			this.results.bucket = formatNum(resultSim.totalBuckets / totalNum);
-			this.results.damecon = formatNum(resultSim.totalDamecon / totalNum);
-			this.results.underway = formatNum(resultSim.totalUnderway / totalNum);
-			
-			let rateS = nodeLast.ranks.S / totalNum;
-			this.results.fuelS = formatNum((resultSim.totalFuelS + resultSim.totalFuelR) / totalNum / rateS);
-			this.results.ammoS = formatNum((resultSim.totalAmmoS) / totalNum / rateS);
-			this.results.steelS = formatNum((resultSim.totalSteelR) / totalNum / rateS);
-			this.results.bauxS = formatNum((resultSim.totalBauxS) / totalNum / rateS);
-			this.results.bucketS = formatNum((resultSim.totalBuckets) / totalNum / rateS);
-			this.results.dameconS = formatNum((resultSim.totalDamecon) / totalNum / rateS);
-			this.results.underwayS = formatNum((resultSim.totalUnderway) / totalNum / rateS);
-			
-			let rateA = (nodeLast.ranks.S + nodeLast.ranks.A) / totalNum;
-			this.results.fuelA = formatNum((resultSim.totalFuelS + resultSim.totalFuelR) / totalNum / rateA);
-			this.results.ammoA = formatNum((resultSim.totalAmmoS) / totalNum / rateA);
-			this.results.steelA = formatNum((resultSim.totalSteelR) / totalNum / rateA);
-			this.results.bauxA = formatNum((resultSim.totalBauxS) / totalNum / rateA);
-			this.results.bucketA = formatNum((resultSim.totalBuckets) / totalNum / rateA);
-			this.results.dameconA = formatNum((resultSim.totalDamecon) / totalNum / rateA);
-			this.results.underwayA = formatNum((resultSim.totalUnderway) / totalNum / rateA);
-			
-			let rateB = (nodeLast.ranks.S + nodeLast.ranks.A + nodeLast.ranks.B) / totalNum;
-			this.results.fuelB = formatNum((resultSim.totalFuelS + resultSim.totalFuelR) / totalNum / rateB);
-			this.results.ammoB = formatNum((resultSim.totalAmmoS) / totalNum / rateB);
-			this.results.steelB = formatNum((resultSim.totalSteelR) / totalNum / rateB);
-			this.results.bauxB = formatNum((resultSim.totalBauxS) / totalNum / rateB);
-			this.results.bucketB = formatNum((resultSim.totalBuckets) / totalNum / rateB);
-			this.results.dameconB = formatNum((resultSim.totalDamecon) / totalNum / rateB);
-			this.results.underwayB = formatNum((resultSim.totalUnderway) / totalNum / rateB);
-			
-			this.results.fuelHP = (resultSim.totalFuelS + resultSim.totalFuelR) / resultSim.totalGaugeDamage;
-			this.results.ammoHP = (resultSim.totalAmmoS) / resultSim.totalGaugeDamage;
-			this.results.steelHP = (resultSim.totalSteelR) / resultSim.totalGaugeDamage;
-			this.results.bauxHP = (resultSim.totalBauxS) / resultSim.totalGaugeDamage;
-			this.results.bucketHP = (resultSim.totalBuckets) / resultSim.totalGaugeDamage;
-			this.results.dameconHP = (resultSim.totalDamecon) / resultSim.totalGaugeDamage;
-			this.results.underwayHP = (resultSim.totalUnderway) / resultSim.totalGaugeDamage;
-			
-			this.results.fuelTP = (resultSim.totalFuelS + resultSim.totalFuelR) / resultSim.totalTransport;
-			this.results.ammoTP = (resultSim.totalAmmoS) / resultSim.totalTransport;
-			this.results.steelTP = (resultSim.totalSteelR) / resultSim.totalTransport;
-			this.results.bauxTP = (resultSim.totalBauxS) / resultSim.totalTransport;
-			this.results.bucketTP = (resultSim.totalBuckets) / resultSim.totalTransport;
-			this.results.dameconTP = (resultSim.totalDamecon) / resultSim.totalTransport;
-			this.results.underwayTP = (resultSim.totalUnderway) / resultSim.totalTransport;
-			
-			this.results.fcfUsed = formatNum(resultSim.totalFCFUsed / totalNum);
-			this.results.emptiedPlane = formatNum(resultSim.totalEmptiedPlanes / totalNum);
-			this.results.emptiedLBAS = formatNum(resultSim.totalEmptiedLBAS / totalNum);
-			
-			let rateSunk = nodeLast.flagsunk / totalNum;
-			this.results.fuelSunk = formatNum((resultSim.totalFuelS + resultSim.totalFuelR) / totalNum / rateSunk);
-			this.results.ammoSunk = formatNum((resultSim.totalAmmoS) / totalNum / rateSunk);
-			this.results.steelSunk = formatNum((resultSim.totalSteelR) / totalNum / rateSunk);
-			this.results.bauxSunk = formatNum((resultSim.totalBauxS) / totalNum / rateSunk);
-			this.results.bucketSunk = formatNum((resultSim.totalBuckets) / totalNum / rateSunk);
-			this.results.dameconSunk = formatNum((resultSim.totalDamecon) / totalNum / rateSunk);
-			this.results.underwaySunk = formatNum((resultSim.totalUnderway) / totalNum / rateSunk);
-			
+
 			for (let i=0; i<resultSim.nodes.length; i++) {
 				let node = resultSim.nodes[i];
 				this.results.nodeReached[i] = formatNum(node.num / totalNum);
@@ -614,7 +557,80 @@ var UI_MAIN = Vue.createApp({
 				this.results.airAP[i] = formatNum(node.airStates[2] / node.num);
 				this.results.airAS[i] = formatNum(node.airStates[3] / node.num);
 				this.results.airASP[i] = formatNum(node.airStates[4] / node.num);
+				this.results.actions[i] = formatNum(node.actions / totalNum);
 			}
+
+			this.results.fuelSupply = formatNum(resultSim.totalFuelS / totalNum);
+			this.results.ammoSupply = formatNum(resultSim.totalAmmoS / totalNum);
+			this.results.bauxSupply = formatNum(resultSim.totalBauxS / totalNum);
+			this.results.fuelRepair = formatNum(resultSim.totalFuelR / totalNum);
+			this.results.steelRepair = formatNum(resultSim.totalSteelR / totalNum);
+			this.results.bucket = formatNum(resultSim.totalBuckets / totalNum);
+			this.results.damecon = formatNum(resultSim.totalDamecon / totalNum);
+			this.results.underway = formatNum(resultSim.totalUnderway / totalNum);
+			this.results.totalActions = formatNum(resultSim.totalActions / totalNum);
+			this.results.totalNBs = formatNum(resultSim.totalNBs / totalNum);
+			
+      const rateGetResource = RESOURCENODE < resultSim.nodes.length ? this.results.nodeReached[RESOURCENODE] : this.results.canAdvanceAfter;
+
+			let rateS = nodeLast.ranks.S / totalNum;
+			this.results.fuelS = formatNum(((resultSim.totalFuelS + resultSim.totalFuelR) / totalNum - GETFUEL * rateGetResource) / rateS);
+			this.results.ammoS = formatNum(((resultSim.totalAmmoS) / totalNum - GETAMMO * rateGetResource) / rateS);
+			this.results.steelS = formatNum(((resultSim.totalSteelR) / totalNum - GETSTEAL * rateGetResource) / rateS);
+			this.results.bauxS = formatNum(((resultSim.totalBauxS) / totalNum - GETBAUX * rateGetResource) / rateS);
+			this.results.bucketS = formatNum((resultSim.totalBuckets) / totalNum / rateS);
+			this.results.dameconS = formatNum((resultSim.totalDamecon) / totalNum / rateS);
+			this.results.underwayS = formatNum((resultSim.totalUnderway) / totalNum / rateS);
+			this.results.totalActionsS = formatNum(resultSim.totalActions / totalNum / rateS);
+			
+			let rateA = (nodeLast.ranks.S + nodeLast.ranks.A) / totalNum;
+			this.results.fuelA = formatNum(((resultSim.totalFuelS + resultSim.totalFuelR) / totalNum - GETFUEL * rateGetResource) / rateA);
+			this.results.ammoA = formatNum(((resultSim.totalAmmoS) / totalNum - GETAMMO * rateGetResource) / rateA);
+			this.results.steelA = formatNum(((resultSim.totalSteelR) / totalNum - GETSTEAL * rateGetResource) / rateA);
+			this.results.bauxA = formatNum(((resultSim.totalBauxS) / totalNum - GETBAUX * rateGetResource) / rateA);
+			this.results.bucketA = formatNum((resultSim.totalBuckets) / totalNum / rateA);
+			this.results.dameconA = formatNum((resultSim.totalDamecon) / totalNum / rateA);
+			this.results.underwayA = formatNum((resultSim.totalUnderway) / totalNum / rateA);
+			
+			let rateB = (nodeLast.ranks.S + nodeLast.ranks.A + nodeLast.ranks.B) / totalNum;
+			this.results.fuelB = formatNum(((resultSim.totalFuelS + resultSim.totalFuelR) / totalNum - GETFUEL * rateGetResource) / rateB);
+			this.results.ammoB = formatNum(((resultSim.totalAmmoS) / totalNum - GETAMMO * rateGetResource) / rateB);
+			this.results.steelB = formatNum(((resultSim.totalSteelR) / totalNum - GETSTEAL * rateGetResource) / rateB);
+			this.results.bauxB = formatNum(((resultSim.totalBauxS) / totalNum - GETBAUX * rateGetResource) / rateB);
+			this.results.bucketB = formatNum((resultSim.totalBuckets) / totalNum / rateB);
+			this.results.dameconB = formatNum((resultSim.totalDamecon) / totalNum / rateB);
+			this.results.underwayB = formatNum((resultSim.totalUnderway) / totalNum / rateB);
+			
+			this.results.fuelHP = (resultSim.totalFuelS + resultSim.totalFuelR - GETFUEL * rateGetResource * totalNum) / resultSim.totalGaugeDamage;
+			this.results.ammoHP = (resultSim.totalAmmoS - GETAMMO * rateGetResource * totalNum) / resultSim.totalGaugeDamage;
+			this.results.steelHP = (resultSim.totalSteelR - GETSTEAL * rateGetResource * totalNum) / resultSim.totalGaugeDamage;
+			this.results.bauxHP = (resultSim.totalBauxS - GETBAUX * rateGetResource * totalNum) / resultSim.totalGaugeDamage;
+			this.results.bucketHP = (resultSim.totalBuckets) / resultSim.totalGaugeDamage;
+			this.results.dameconHP = (resultSim.totalDamecon) / resultSim.totalGaugeDamage;
+			this.results.underwayHP = (resultSim.totalUnderway) / resultSim.totalGaugeDamage;
+			
+			this.results.fuelTP = (resultSim.totalFuelS + resultSim.totalFuelR - GETFUEL * rateGetResource * totalNum) / resultSim.totalTransport;
+			this.results.ammoTP = (resultSim.totalAmmoS - GETAMMO * rateGetResource * totalNum) / resultSim.totalTransport;
+			this.results.steelTP = (resultSim.totalSteelR - GETSTEAL * rateGetResource * totalNum) / resultSim.totalTransport;
+			this.results.bauxTP = (resultSim.totalBauxS - GETBAUX * rateGetResource * totalNum) / resultSim.totalTransport;
+			this.results.bucketTP = (resultSim.totalBuckets) / resultSim.totalTransport;
+			this.results.dameconTP = (resultSim.totalDamecon) / resultSim.totalTransport;
+			this.results.underwayTP = (resultSim.totalUnderway) / resultSim.totalTransport;
+			
+			this.results.fcfUsed = formatNum(resultSim.totalFCFUsed / totalNum);
+			this.results.emptiedPlane = formatNum(resultSim.totalEmptiedPlanes / totalNum);
+			this.results.emptiedLBAS = formatNum(resultSim.totalEmptiedLBAS / totalNum);
+			
+			let rateSunk = nodeLast.flagsunk / totalNum;
+			this.results.fuelSunk = formatNum(((resultSim.totalFuelS + resultSim.totalFuelR) / totalNum - GETFUEL * rateGetResource) / rateSunk);
+			this.results.ammoSunk = formatNum(((resultSim.totalAmmoS) / totalNum - GETAMMO * rateGetResource) / rateSunk);
+			this.results.steelSunk = formatNum(((resultSim.totalSteelR) / totalNum - GETSTEAL * rateGetResource) / rateSunk);
+			this.results.bauxSunk = formatNum(((resultSim.totalBauxS) / totalNum - GETSTEAL * rateGetResource) / rateSunk);
+			this.results.bucketSunk = formatNum((resultSim.totalBuckets) / totalNum / rateSunk);
+			this.results.dameconSunk = formatNum((resultSim.totalDamecon) / totalNum / rateSunk);
+			this.results.underwaySunk = formatNum((resultSim.totalUnderway) / totalNum / rateSunk);
+			this.results.actionsSunk = formatNum((resultSim.totalActions) / totalNum / rateSunk);
+			
 		},
 		
 		onclickInsertBattle: function(ind) {

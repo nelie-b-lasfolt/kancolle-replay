@@ -2608,7 +2608,13 @@ function simDataLoad(data) {
 		if (data.consts.cvciChanceBA) ARTILLERYSPOTDATA[73].chanceMod = data.consts.cvciChanceBA;
 	}
 	if (data.bucketHPPercent != null) BUCKETPERCENT = data.bucketHPPercent;
-	if (data.bucketTime != null) BUCKETTIME = data.bucketTime;
+	if (data.bucketHPPercentList != null) BUCKETPERCENTLIST = data.bucketHPPercentList;
+	if (data.resourceNode != null) RESOURCENODE = data.resourceNode;
+	if (data.getFuel != null) GETFUEL = data.getFuel;
+	if (data.getAmmo != null) GETAMMO = data.getAmmo;
+	if (data.getSteal != null) GETSTEAL = data.getSteal;
+	if (data.getBaux != null) GETBAUX = data.getBaux;
+  if (data.bucketTime != null) BUCKETTIME = data.bucketTime;
 	if (data.continueOnTaiha) DORETREAT = false;
 	if (data.didSpecial) MECHANICS.specialAttacks = false;
 	

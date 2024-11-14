@@ -680,6 +680,7 @@ function isNBFightEscort(ships2,ships2C) {
 }
 
 function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BAPI,noupdate,friendFleet) {
+	ACTIONS = 0;
 	var F2C = F2.combinedWith;
 	var ships1 = F1.ships, ships2 = F2.ships, ships2C = F2C.ships;
 	var alive1 = [], alive2 = [], alive2C = [], subsalive1 = [], subsalive2 = [], subsalive2C = [];
@@ -1069,6 +1070,8 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 	if (MECHANICS.morale && !noupdate) {
 		updateMorale(ships1,results.rank,results.MVP,NBonly,didNB);
 	}
+
+	results.actions = ACTIONS;
 	
 	return results;
 }

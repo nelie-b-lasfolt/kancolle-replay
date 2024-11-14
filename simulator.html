@@ -4,6 +4,7 @@
 	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 	<meta content="utf-8" http-equiv="encoding">
 
+	<link rel="stylesheet" href="css/simulator-ui/reset.css"/>
 	<link rel="stylesheet" href="css/simulator-ui/main.css"/>
 	<link rel="stylesheet" href="css/simulator-ui/fleet-editor.css"/>
 	<link rel="stylesheet" href="css/simulator-ui/selector.css"/>
@@ -162,10 +163,19 @@
 					<template v-slot:inp_hp><input type="number" min="0" max="100" v-model="settings.bucketPercent" :class="getClassSetting('bucketPercent')"/></template>
 					<template v-slot:inp_time><input type="number" min="0" max="100" v-model="settings.bucketTime" :class="getClassSetting('bucketTime')"/></template>
 				</i18n-t></div>
+				<div style="display:flex; margin-left:26px">
+					<div>または各艦HP：</div>
+					<div v-for="(item, index) in settings.bucketPercentList" :key="index">
+						<div>
+							<div><input type="number" min="0" max="100" v-model="settings.bucketPercentList[index]" :class="getClassSetting('bucketPercent')" /></div>
+						</div>
+					</div>
+					<div>%以下でバケツを使用する</div>
+				</div>
 				<div style="margin-left:26px"><i18n-t keypath="bucket_do_not_count_use" scope="global">
 					<template v-slot:inp_time><input type="number" min="0" max="100" v-model="settings.bucketTimeIgnore" :class="getClassSetting('bucketTimeIgnore')"/></template>
 				</i18n-t></div>
-				<div><label><input type="checkbox" v-model="settings.carryOverHP" /><i18n-t keypath="carry_over_ship_hp" scope="global"><template v-slot:img_bucket><img src="assets/stats/bucket.png" /></template></i18n-t></label></div>
+				<div style="margin-left:26px"><label><input type="checkbox" v-model="settings.carryOverHP" /><i18n-t keypath="carry_over_ship_hp" scope="global"><template v-slot:img_bucket><img src="assets/stats/bucket.png" /></template></i18n-t></label></div>
 				<div><label><input type="checkbox" v-model="settings.carryOverMorale" />{{$t('carry_over_ship_morale')}}</label></div>
 			</div>
 			<div>
@@ -183,6 +193,17 @@
 					<input type="button" :value="$t('import_mapwide_bonuses_once')" @click="onclickBonusImporter"/>
 				</div>
 			</div>
+
+			<div>
+				<h4>資源マスの設定:</h4>
+				Node<input type="number" min="0" v-model="settings.resourceNode" style="width:6ex"/>通過後
+				<img src="assets/stats/fuel.png" :alt="$t('fuel')"/><input type="number" min="0" v-model="settings.getFuel" style="width:8ex"/>
+				<img src="assets/stats/ammo.png" :alt="$t('ammo')"/><input type="number" min="0" v-model="settings.getAmmo" style="width:8ex"/>
+				<img src="assets/stats/steel.png" :alt="$t('steel')"/><input type="number" min="0" v-model="settings.getSteal" style="width:8ex"/>
+				<img src="assets/stats/baux.png" :alt="$t('baux')"/><input type="number" min="0" v-model="settings.getBaux" style="width:8ex"/>
+				獲得
+			</div>
+			
 			<div id="divSettingsMechanics">
 				<div class="scrollAnchor"><div ref="divSettingsMechanicsScroll"></div></div>
 				<div class="collapseButton" @click="showMechanics=!showMechanics">
@@ -450,6 +471,7 @@
 					</div>
 				</div>
 			</div>
+
 			<div>
 				<input type="button" :value="$t('restore_defaults')" @click="onclickRestoreSettings"/>
 			</div>
@@ -590,6 +612,13 @@
 							<tr><td v-for="stat in results.nodeReached">{{stat}}</td><td>{{results.canAdvanceAfter}}</td></tr>
 							</table>
 						</div>
+						<div>
+							<div>行動回数</div>
+							<table class="multi">
+								<tr><th v-for="n in results.numNodes">{{n}}</th></tr>
+								<tr><td v-for="a in results.actions">{{a}}</td></tr>
+							</table>
+						</div>
 						<div v-show="results.fcfUsed">
 							<div><i18n-t keypath="fcf_used" scope="global"><template v-slot:img_fcf><img src="assets/items/28.png"/></template></i18n-t>: {{results.fcfUsed}}</div>
 						</div>
@@ -614,6 +643,18 @@
 							</table>
 						</div>
 						<div>
+							<div>平均行動回数:</div>
+							<table>
+							<tr><th>★</th><td>{{results.totalActions}}</td></tr>
+							</table>
+						</div>
+						<div>
+							<div>平均夜戦回数:</div>
+							<table>
+							<tr><th>🌙</th><td>{{results.totalNBs}}</td></tr>
+							</table>
+						</div>
+						<div>
 							<div>
 								<i18n-t keypath="avg_resource_per" scope="global">
 									<template v-slot:avg_res><span class="tooltip" :title="$t('avg_resource_tooltip')">{{$t('avg_resource')}}</span></template>
@@ -629,6 +670,7 @@
 							<tr><th><img src="assets/stats/bucket.png" :alt="$t('bucket')"/></th><td><span class="resultBold">{{results.bucketS}}</span></td></tr>
 							<tr v-show="results.damecon"><th><img src="assets/items/14.png" class="iconSlotitem" :alt="$t('repair_team')"/></th><td><span class="resultBold">{{results.dameconS}}</span></td></tr>
 							<tr v-show="results.underway"><th><img src="assets/items/35.png" class="iconSlotitem" :alt="$t('underway_resupply')"/></th><td><span class="resultBold">{{results.underwayS}}</span></td></tr>
+							<tr><th>★</th><td><span class="resultBold">{{results.totalActionsS}}</span></td></tr>
 							</table>
 						</div>
 						<div>
@@ -647,7 +689,8 @@
 							<tr><th><img src="assets/stats/bucket.png" :alt="$t('bucket')"/></th><td><span class="resultBold">{{results.bucketSunk}}</span></td></tr>
 							<tr v-show="results.damecon"><th><img src="assets/items/14.png" class="iconSlotitem" :alt="$t('repair_team')"/></th><td><span class="resultBold">{{results.dameconSunk}}</span></td></tr>
 							<tr v-show="results.underway"><th><img src="assets/items/35.png" class="iconSlotitem" :alt="$t('underway_resupply')"/></th><td><span class="resultBold">{{results.underwaySunk}}</span></td></tr>
-							</table>
+							<tr><th>★</th><td><span class="resultBold">{{results.actionsSunk}}</span></td></tr>	
+						</table>
 						</div>
 						<div>
 							<div>{{$t('avg_emptied_plane_slot')}}: {{results.emptiedPlane}}</div>

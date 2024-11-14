@@ -104,6 +104,8 @@ var SIM = {
 			totalFCFUsed: 0,
 			totalUnderway: 0,
 			totalCanAdvanceAfter: 0,
+			totalActions: 0,
+			totalNBs: 0,
 			nodes: [],
 		};
 		for (let n=0; n<numNodes; n++) {
@@ -124,6 +126,7 @@ var SIM = {
 				dameconIndivC: [0,0,0,0,0,0],
 				undamaged: 0,
 				airStates: [0,0,0,0,0],
+				actions: 0
 			});
 		}
 	},
@@ -180,15 +183,21 @@ var SIM = {
 			if (dameconAny) rNode.dameconAny++;
 			if (sunkFAny) rNode.sunkFAny++;
 		}
+		rNode.actions += resultSim.actions;
+		this._results.totalActions += resultSim.actions;
+		if(resultSim.didNB) this._results.totalNBs++ 
 	},
 	_updateResultsTotal: function(dataInput) {
 		this._results.totalnum++;
 		let foundRetreated = false, foundUnderway = false;
 		for (let fleet of FLEETS1) {
 			if (!fleet) continue;
-			for (let ship of fleet.ships) {
+			for (let [i, ship] of fleet.ships.entries()) {
 				let repairTime = window.getRepairTime(ship);
-				let useBucket = (ship.HP/ship.maxHP <= window.BUCKETPERCENT || repairTime > window.BUCKETTIME) && repairTime >= (dataInput.bucketTimeIgnore || 0);
+				let useBucket = (ship.HP/ship.maxHP <= Math.max(window.BUCKETPERCENT, window.BUCKETPERCENTLIST[i])
+					|| repairTime > window.BUCKETTIME
+				) 
+				&& repairTime >= (dataInput.bucketTimeIgnore || 0);
 				if (!window.CARRYOVERHP || useBucket) {
 					let cost = window.getRepairCost(ship);
 					this._results.totalFuelR += cost[0];
@@ -255,6 +264,7 @@ var SIM = {
 		this._results.totalGaugeDamage += shipBossFlag.maxHP - Math.max(0,shipBossFlag.HP);
 		let ship1 = FLEETS1[0].ships[0];
 		if (ship1 && this.simResultPrev && this.simResultPrev.battleNum == dataInput.nodes.length && (ship1.HP/ship1.maxHP > .25 || (ship1.repairs && ship1.repairs.length))) this._results.totalCanAdvanceAfter++;
+	
 	},
 
 	_inputEquivalent: function(v1,v2) {
@@ -655,7 +665,13 @@ var SIM = {
 		window.CARRYOVERHP = !!dataInput.carryOverHP;
 		window.CARRYOVERMORALE = !!dataInput.carryOverMorale;
 		if (dataInput.bucketHPPercent != null) window.BUCKETPERCENT = dataInput.bucketHPPercent/100;
+		if (dataInput.bucketHPPercentList != null) window.BUCKETPERCENTLIST = dataInput.bucketHPPercentList.map(x => x/100);
 		if (dataInput.bucketTime != null) window.BUCKETTIME = dataInput.bucketTime*3600;
+		if (dataInput.resourceNode != null) window.RESOURCENODE = dataInput.resourceNode;
+		if (dataInput.getFuel != null) window.GETFUEL = dataInput.getFuel;
+		if (dataInput.getAmmo != null) window.GETAMMO = dataInput.getAmmo;
+		if (dataInput.getSteal != null) window.GETSTEAL = dataInput.getSteal;
+		if (dataInput.getBaux != null) window.GETBAUX = dataInput.getBaux;
 		
 		if (dataInput.didSpecial) MECHANICS.specialAttacks = false;
 		
@@ -997,8 +1013,8 @@ var SIM = {
 				for (let fleet of FLEETS1) {
 					if (!fleet) continue;
 					fleet.reset(true);
-					for (let ship of fleet.ships) {
-						let notHP = window.CARRYOVERHP && ship.HP/ship.maxHP > window.BUCKETPERCENT && window.getRepairTime(ship) <= window.BUCKETTIME;
+					for (let [i, ship] of fleet.ships.entries()) {
+						let notHP = window.CARRYOVERHP && ship.HP/ship.maxHP > Math.max(window.BUCKETPERCENT, window.BUCKETPERCENTLIST[i]) && window.getRepairTime(ship) <= window.BUCKETTIME;
 						ship.reset(notHP, window.CARRYOVERMORALE);
 						if (window.CARRYOVERMORALE) ship.morale = Math.max(49, ship.morale - 15);
 					}
