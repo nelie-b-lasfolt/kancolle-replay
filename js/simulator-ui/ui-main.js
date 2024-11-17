@@ -1847,7 +1847,7 @@ var UI_BACKUP = Vue.createApp({
 			this.shareURLLoading = true;
 			LZMA.compress(JSON.stringify(CONVERT.uiToSave(UI_MAIN)), 9, (ab) => {
 				// let url = window.location.href.split(/[?#]/)[0] + '#backup=' + COMMON.arrayBufferToBase64(ab);
-				let url = 'https://kc3kai.github.io/kancolle-replay/simulator.html' + '#backup=' + COMMON.arrayBufferToBase64(ab);
+				let url = 'https://color-ribbon.github.io/kancolle-replay/simulator.html' + '#backup=' + COMMON.arrayBufferToBase64(ab);
 				fetch('https://tinyurl.com/api-create.php?url=' + encodeURIComponent(url)).then(async(res) => {
 					let txt = await res.text();
 					console.log(txt);

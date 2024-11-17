@@ -845,18 +845,18 @@
 	</div>
 	
 	<div id="divOther">
-		<div id="divChangeLog">
-			<div><span class="header">{{$t('change_log_header')}}:</span></div>
-			<div v-for="(obj,idx) in $i18n.messages[$i18n.fallbackLocale].change_log">{{obj.date}} - <i18n-t :keypath="'change_log[' + idx + '].txt'" scope="global">
-				<template v-for="(link,i) in obj.links" v-slot:['link'+i]><a :href="$t('change_log[' + idx + '].links[' + i + '].url')" target="_blank">{{$t('change_log[' + idx + '].links[' + i + '].txt')}}</a></template>
-			</i18n-t></div>
-		</div>
-		<div id="divFooter">
-			<div><i18n-t keypath="bug_reports_feature_requests" scope="global">
-				<template v-slot:link_github><a href="https://github.com/KC3Kai/kancolle-replay/issues">Github</a></template>
-				<template v-slot:link_discord><a href="https://discord.gg/RtSadWM">English KC Discord</a></template>
-			</i18n-t></div>
-		</div>
+		<details>
+			<summary><span class="header">{{$t('change_log_header')}}:</span></summary>
+			<div v-for="(obj,idx) in $i18n.messages[$i18n.locale].change_log">
+				{{obj.date}} - <i18n-t :keypath="'change_log[' + idx + '].txt'" scope="global">
+					<template v-for="(link,i) in obj.links" v-slot:['link'+i]>
+						<a :href="$t('change_log[' + idx + '].links[' + i + '].url')" target="_blank">
+							{{$t('change_log[' + idx + '].links[' + i + '].txt')}}
+						</a>
+					</template>
+				</i18n-t>
+			</div>
+		</details>
 	</div>
 	
 	<template id="tmpBattle">
