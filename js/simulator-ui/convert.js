@@ -847,6 +847,7 @@ window.CONVERT = {
 			allowAnyFormation: !dataUI.settings.replaceImpossibleFormations,
 			bucketHPPercent: dataUI.settings.bucketPercent,
 			bucketHPPercentList: dataUI.settings.bucketPercentList,
+			bucketCount: dataUI.settings.bucketCount,
 			bucketTime: dataUI.settings.bucketTime,
 			bucketTimeIgnore: (dataUI.settings.bucketTimeIgnore||0)*60*60,
 			carryOverHP: dataUI.settings.carryOverHP,
@@ -877,6 +878,7 @@ window.CONVERT = {
 				useSmoke: battleUI.useSmoke,
 				useAnchorageRepair: battleUI.useAnchorageRepair,
 				offrouteRate: battleUI.offrouteRate/100,
+				fixEngagement: battleUI.fixEngagement,
 			};
 			if (battleUI.doNBCond) nodeInput.doNBCond = battleUI.doNBCond;
 			if (battleUI.formationUseLAIfNoSpAttack && COMMON.checkSpecialAttackUI(this._UI_MAIN,+battleUI.formation)) nodeInput.formationUseLAIfNoSpAttack = true;

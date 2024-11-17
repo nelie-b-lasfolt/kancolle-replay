@@ -62,9 +62,9 @@ button, input[type="button"] {
   font-size: 14px;
 }
 
-button:hover, input[type="button"]:hover {
-  /* background-color: #eef; */
-}
+/* button:hover, input[type="button"]:hover {
+   background-color: #eef; 
+} */
 
 /* 入力フィールド */
 input[type="text"], input[type="password"], input[type="email"], textarea {

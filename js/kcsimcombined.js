@@ -412,7 +412,8 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 			if (!ships1[i].isflagship) ships1[i].protection = false;
 		}
 		if (ships1[i].HP/ships1[i].maxHP <= .5) results.undamaged = false;
-		if (ships1[i].HP/ships1[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1[i]) > BUCKETTIME) results.buckets++;
+		if (ships1[i].HP/ships1[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1[i]) > BUCKETTIME) 
+			if(BUCKETCOUNT[i]) results.buckets++;
 	}
 	for (var i=0; i<ships1C.length; i++) {
 		if (ships1C[i].HP/ships1C[i].maxHP <= .25 && !ships1C[i].retreated) {
@@ -421,7 +422,8 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 			if (!ships1C[i].isflagship) ships1C[i].protection = false;
 		}
 		if (ships1C[i].HP/ships1C[i].maxHP <= .5) results.undamaged = false;
-		if (ships1C[i].HP/ships1C[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1C[i]) > BUCKETTIME) results.buckets++;
+		if (ships1C[i].HP/ships1C[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1C[i]) > BUCKETTIME) 
+			if(BUCKETCOUNT[i]) results.buckets++;
 	}
 	for (let base of LBAS) {
 		if (!base) continue;
@@ -570,7 +572,7 @@ function simStatsCombined(numsims,type,foptions) {
 					totalResult.totalFuelR += r[0];
 					totalResult.totalSteelR += r[1];
 				}
-				if (useBucket) totalResult.totalBuckets++;
+				if (useBucket && BUCKETCOUNT[j]) totalResult.totalBuckets++;
 				let fuelleft = ship.fuelleft - (ship._fuelUnderway || 0);
 				let ammoleft = ship.ammoleft - (ship._ammoUnderway || 0);
 				totalResult.totalFuelS += Math.floor(ship.fuel * (10-fuelleft)/10);
@@ -679,7 +681,7 @@ function isNBFightEscort(ships2,ships2C) {
 	return (allsunk || count >= 3);
 }
 
-function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BAPI,noupdate,friendFleet) {
+function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BAPI,noupdate,friendFleet,fixEngagement) {
 	ACTIONS = 0;
 	var F2C = F2.combinedWith;
 	var ships1 = F1.ships, ships2 = F2.ships, ships2C = F2C.ships;
@@ -717,11 +719,15 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 		F1.formation = SIMCONSTS.echelonOld;
 	}
 	
-	var r = Math.random();
-	if (r < .45) ENGAGEMENT = 1;
-	else if (r < .6) ENGAGEMENT = 1.2;
-	else if (r < .9 || F1.noRedT || F2.noRedT || F2C.noRedT) ENGAGEMENT = .8;
-	else ENGAGEMENT = .6;
+	if(fixEngagement == 0) {
+		var r = Math.random();
+		if (r < .45) ENGAGEMENT = 1;
+		else if (r < .6) ENGAGEMENT = 1.2;
+		else if (r < .9 || F1.noRedT || F2.noRedT || F2C.noRedT) ENGAGEMENT = .8;
+		else ENGAGEMENT = .6;
+	}
+	else
+	  ENGAGEMENT = fixEngagement;
 	
 	if (F1.useSmoke && alive1.length >= 4) F1.smokeType = getSmokeType(alive1);
 	
@@ -1055,7 +1061,8 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 			if (!ships1[i].isflagship) ships1[i].protection = false;
 		}
 		if (ships1[i].HP/ships1[i].maxHP <= .5) results.undamaged = false;
-		if (ships1[i].HP/ships1[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1[i]) > BUCKETTIME) results.buckets++;
+		if (ships1[i].HP/ships1[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1[i]) > BUCKETTIME) 
+			if(BUCKETCOUNT[i]) results.buckets++;
 	}
 	for (let base of LBAS) {
 		if (!base) continue;
@@ -1528,7 +1535,8 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 			if (!ships1[i].isflagship) ships1[i].protection = false;
 		}
 		if (ships1[i].HP/ships1[i].maxHP <= .5) results.undamaged = false;
-		if (ships1[i].HP/ships1[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1[i]) > BUCKETTIME) results.buckets++;
+		if (ships1[i].HP/ships1[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1[i]) > BUCKETTIME) 
+			if(BUCKETCOUNT[i]) results.buckets++;
 	}
 	for (var i=0; i<ships1C.length; i++) {
 		if (ships1C[i].HP/ships1C[i].maxHP <= .25 && !ships1C[i].retreated) {
@@ -1537,7 +1545,8 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 			if (!ships1C[i].isflagship) ships1C[i].protection = false;
 		}
 		if (ships1C[i].HP/ships1C[i].maxHP <= .5) results.undamaged = false;
-		if (ships1C[i].HP/ships1C[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1C[i]) > BUCKETTIME) results.buckets++;
+		if (ships1C[i].HP/ships1C[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1C[i]) > BUCKETTIME) 
+			if(BUCKETCOUNT[i]) results.buckets++;
 	}
 	for (let base of LBAS) {
 		if (!base) continue;

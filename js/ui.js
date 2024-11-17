@@ -2230,6 +2230,7 @@ function clickedWatchBattle() {
 			else
 				res = simCombined(API.combined,FLEETS1[0],FLEETS1[1],FLEETS2[j],supportF,LBASwaves,options.NB,options.NBonly,options.aironly,options.landbomb,options.noammo,BAPI,false,friendFleetF);
 		} else {
+			console.log(oprions);
 			if (ADDEDECOMBINED[ennum])
 				res = sim6vs12(FLEETS1[0],FLEETS2[j],supportF,LBASwaves,options.NB,options.NBonly,options.aironly,options.landbomb,options.noammo,BAPI,false,friendFleetF);
 			else
@@ -2609,6 +2610,7 @@ function simDataLoad(data) {
 	}
 	if (data.bucketHPPercent != null) BUCKETPERCENT = data.bucketHPPercent;
 	if (data.bucketHPPercentList != null) BUCKETPERCENTLIST = data.bucketHPPercentList;
+	if (data.bucketCount != null) BUCKETCOUNT = data.bucketCount;
 	if (data.resourceNode != null) RESOURCENODE = data.resourceNode;
 	if (data.getFuel != null) GETFUEL = data.getFuel;
 	if (data.getAmmo != null) GETAMMO = data.getAmmo;

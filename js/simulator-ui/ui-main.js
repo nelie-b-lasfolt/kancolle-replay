@@ -98,6 +98,7 @@ var UI_MAIN = Vue.createApp({
 			yamatoSpecial2Rate: SIMCONSTS.yamatoSpecial2Rate,
 			subFleetAttackRate: SIMCONSTS.subFleetAttackRate,
 			richelieuSpecialRate: SIMCONSTS.richelieuSpecialRate,
+			specialAttackAcc: SIMCONSTS.specialAttackAcc,
 			nelsonTouchUseFormula: true,
 			nagatoSpecialUseFormula: true,
 			mutsuSpecialUseFormula: true,
@@ -108,6 +109,7 @@ var UI_MAIN = Vue.createApp({
 			arcticCamoEva: SIMCONSTS.arcticCamoEva,
 			bucketPercent: BUCKETPERCENT*100,
 			bucketPercentList: BUCKETPERCENTLIST.map(x => x * 100),
+			bucketCount: BUCKETCOUNT,
 			bucketTime: BUCKETTIME/3600,
 			bucketTimeIgnore: 0,
 			carryOverHP: CARRYOVERHP,
@@ -467,6 +469,7 @@ var UI_MAIN = Vue.createApp({
 				useSmoke: false,
 				useAnchorageRepair: false,
 				offrouteRate: 0,
+				fixEngagement: 0,
 					
 				enemyComps: [],
 			};

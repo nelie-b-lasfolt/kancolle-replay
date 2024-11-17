@@ -229,6 +229,7 @@ var SIMCONSTS = {
 	richelieuSpecialRate: 60,
 	qeSpecialRate: 60,
 	nightZuiunCIRate: 60,
+	specialAttackAcc: 0,
 	arcticCamoAr: 0,
 	arcticCamoEva: 0,
 	airRaidCostW6: false,
@@ -339,6 +340,7 @@ function toggleAACIRework(enable) {
 
 var BUCKETPERCENT = .5;
 var BUCKETPERCENTLIST = [0,0,0,0,0,0,0];
+var BUCKETCOUNT = [true,true,true,true,true,true,true,];
 var BUCKETTIME = 99*3600;
 var CARRYOVERHP = false;
 var CARRYOVERMORALE = false;
@@ -1481,7 +1483,7 @@ function getSpecialAttackMod(ship,attackSpecial) {
 		mod = NBATTACKDATA[ship.attackSpecialType].dmgMod;
 		modAcc = NBATTACKDATA[ship.attackSpecialType].accMod;
 	}
-	return { modPow: mod, modAcc: modAcc };
+	return { modPow: mod, modAcc: SPECIALATTACKACC || modAcc };
 }
 
 function shellPhase(order1,order2,alive1,subsalive1,alive2,subsalive2,APIhou,isOASW) {
@@ -3479,7 +3481,7 @@ function apiUpdateFlag(dataroot,isRaid,combineTypeF,combinedE) {
 	}
 }
 
-function sim(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BAPI,noupdate,friendFleet) {
+function sim(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BAPI,noupdate,friendFleet,fixEngagement) {
 	ACTIONS = 0;
 	var ships1 = F1.ships, ships2 = F2.ships;
 	var alive1 = [], alive2 = [], subsalive1 = [], subsalive2 = [];
@@ -3507,11 +3509,15 @@ function sim(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BAPI,no
 		F1.formation = ECHELON;
 	}
 	
-	var r = Math.random();
-	if (r < .45) ENGAGEMENT = 1;
-	else if (r < .6) ENGAGEMENT = 1.2;
-	else if (r < .9 || F1.noRedT || F2.noRedT) ENGAGEMENT = .8;
-	else ENGAGEMENT = .6;
+	if(fixEngagement == 0) {
+		var r = Math.random();
+		if (r < .45) ENGAGEMENT = 1;
+		else if (r < .6) ENGAGEMENT = 1.2;
+		else if (r < .9 || F1.noRedT || F2.noRedT) ENGAGEMENT = .8;
+		else ENGAGEMENT = .6;
+	}
+	else
+	  ENGAGEMENT = fixEngagement;
 	
 	if (F1.useSmoke && alive1.length >= 4) F1.smokeType = getSmokeType(alive1);
 	
@@ -3819,7 +3825,8 @@ function sim(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BAPI,no
 			if (!noupdate && !ships1[i].isflagship) ships1[i].protection = false;
 		}
 		if (ships1[i].HP/ships1[i].maxHP <= .5) results.undamaged = false;
-		if (ships1[i].HP/ships1[i].maxHP <= Math.max(BUCKETPERCENT, BUCKETPERCENTLIST[i]) || getRepairTime(ships1[i]) > BUCKETTIME) results.buckets++;
+		if (ships1[i].HP/ships1[i].maxHP <= Math.max(BUCKETPERCENT, BUCKETPERCENTLIST[i]) || getRepairTime(ships1[i]) > BUCKETTIME) 
+			if(BUCKETCOUNT[i]) results.buckets++;
 		//if (ships1[i].repairsOrig && ships1[i].repairsOrig.length > ships1[i]
 	}
 	for (let base of LBAS) {
@@ -4204,8 +4211,8 @@ function simStats(numsims,foptions) {
 			var LBASwaves = [];
 			for (var k=0; k<options.lbas.length; k++) LBASwaves.push(LBAS[options.lbas[k]-1]);
 			var res;
-			if (FLEETS2[j].combinedWith) res = sim6vs12(FLEETS1[0],FLEETS2[j],FLEETS1S[supportNum],LBASwaves,options.NB,options.NBonly,options.aironly,options.landbomb,options.noammo,null,false,friendFleet);
-			else res = sim(FLEETS1[0],FLEETS2[j],FLEETS1S[supportNum],LBASwaves,options.NB,options.NBonly,options.aironly,options.landbomb,options.noammo,null,false,friendFleet);
+			if (FLEETS2[j].combinedWith) res = sim6vs12(FLEETS1[0],FLEETS2[j],FLEETS1S[supportNum],LBASwaves,options.NB,options.NBonly,options.aironly,options.landbomb,options.noammo,null,false,friendFleet,options.fixEngagement);
+			else res = sim(FLEETS1[0],FLEETS2[j],FLEETS1S[supportNum],LBASwaves,options.NB,options.NBonly,options.aironly,options.landbomb,options.noammo,null,false,friendFleet,options.fixEngagement);
 			totalResult.nodes[j].num++;
 			if (res.didNB) totalResult.totalNBs++;
 			if (res.redded) totalResult.nodes[j].redded++;
@@ -4231,7 +4238,7 @@ function simStats(numsims,foptions) {
 				totalResult.totalFuelR += r[0];
 				totalResult.totalSteelR += r[1];
 			}
-			if (useBucket) totalResult.totalBuckets++;
+			if (useBucket && BUCKETCOUNT[j]) totalResult.totalBuckets++;
 			let fuelleft = ship.fuelleft - (ship._fuelUnderway || 0);
 			let ammoleft = ship.ammoleft - (ship._ammoUnderway || 0);
 			totalResult.totalFuelS += Math.floor(ship.fuel * (10-fuelleft)/10);
@@ -4504,7 +4511,7 @@ function getNightEquips(alive1,alive2,APIyasen) {
 	return [[star1,star2],[light1,light2],[scout1,scout2],[slrerolls1,slrerolls2]];
 }
 
-function simNightFirstCombined(F1,F2,Fsupport,LBASwaves,BAPI) {
+function simNightFirstCombined(F1,F2,Fsupport,LBASwaves,BAPI,fixEngagement) {
 	var F2C = F2.combinedWith;
 	var ships1 = F1.ships, ships2 = F2.ships, ships2C = F2C.ships;
 	var alive1 = [], alive2 = [], alive2C = [], subsalive1 = [], subsalive2 = [], subsalive2C = [];
@@ -4537,11 +4544,15 @@ function simNightFirstCombined(F1,F2,Fsupport,LBASwaves,BAPI) {
 		if (ships2C[i].isInstall) hasInstall2C = true;
 	}
 	
-	var r = Math.random();
-	if (r < .45) ENGAGEMENT = 1;
-	else if (r < .6) ENGAGEMENT = 1.2;
-	else if (r < .9 || F1.noRedT || F2.noRedT || F2C.noRedT) ENGAGEMENT = .8;
-	else ENGAGEMENT = .6;
+	if(fixEngagement == 0) {
+		var r = Math.random();
+		if (r < .45) ENGAGEMENT = 1;
+		else if (r < .6) ENGAGEMENT = 1.2;
+		else if (r < .9 || F1.noRedT || F2.noRedT || F2C.noRedT) ENGAGEMENT = .8;
+		else ENGAGEMENT = .6;
+	}
+	else
+	  ENGAGEMENT = fixEngagement;
 	
 	F1.AS = F2.AS = F2C.AS = 0;
 	
@@ -4630,7 +4641,7 @@ function simNightFirstCombined(F1,F2,Fsupport,LBASwaves,BAPI) {
 	if (doDay && alive1.length+subsalive1.length > 0 && alive2.length+subsalive2.length > 0) {
 		APIyasen.api_day_flag = 1;
 		let BAPIDay = {data:{}};
-		sim(F1,F2,Fsupport,LBASwaves,false,false,false,false,false,BAPIDay,true,null,true);
+		sim(F1,F2,Fsupport,LBASwaves,false,false,false,false,false,BAPIDay,true,null,true,0);
 		for (let key in BAPIDay.data) {
 			if (!APIyasen[key]) APIyasen[key] = BAPIDay.data[key];
 		}
@@ -4652,7 +4663,8 @@ function simNightFirstCombined(F1,F2,Fsupport,LBASwaves,BAPI) {
 			if (!ships1[i].isflagship) ships1[i].protection = false;
 		}
 		if (ships1[i].HP/ships1[i].maxHP <= .5) results.undamaged = false;
-		if (ships1[i].HP/ships1[i].maxHP <= Math.max(BUCKETPERCENT, BUCKETPERCENTLIST[i]) || getRepairTime(ships1[i]) > BUCKETTIME) results.buckets++;
+		if (ships1[i].HP/ships1[i].maxHP <= Math.max(BUCKETPERCENT, BUCKETPERCENTLIST[i]) || getRepairTime(ships1[i]) > BUCKETTIME) 
+			if(BUCKETCOUNT[i]) results.buckets++;
 	}
 	results.mvpDay = results.MVP = F1.getMVP();
 	

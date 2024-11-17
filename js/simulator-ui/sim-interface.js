@@ -203,7 +203,7 @@ var SIM = {
 					this._results.totalFuelR += cost[0];
 					this._results.totalSteelR += cost[1];
 				}
-				if (useBucket) this._results.totalBuckets++;
+				if (useBucket && BUCKETCOUNT[i]) this._results.totalBuckets++;
 				let fuelleft = ship.fuelleft - (ship._fuelUnderway || 0);
 				let ammoleft = ship.ammoleft - (ship._ammoUnderway || 0);
 				let costFuel = Math.round(ship.fuel * (10-fuelleft)/10);
@@ -666,6 +666,7 @@ var SIM = {
 		window.CARRYOVERMORALE = !!dataInput.carryOverMorale;
 		if (dataInput.bucketHPPercent != null) window.BUCKETPERCENT = dataInput.bucketHPPercent/100;
 		if (dataInput.bucketHPPercentList != null) window.BUCKETPERCENTLIST = dataInput.bucketHPPercentList.map(x => x/100);
+		if (dataInput.bucketCount != null) window.BUCKETCOUNT = dataInput.bucketCount;
 		if (dataInput.bucketTime != null) window.BUCKETTIME = dataInput.bucketTime*3600;
 		if (dataInput.resourceNode != null) window.RESOURCENODE = dataInput.resourceNode;
 		if (dataInput.getFuel != null) window.GETFUEL = dataInput.getFuel;
@@ -953,10 +954,10 @@ var SIM = {
 				fleetF.resetBattle();
 				if (fleetE.combinedWith) {
 					fleetF.battleType = '6v12';
-					result = sim6vs12(fleetF,fleetE,fleetFSupport,lbWaves,doNB,node.NBOnly,node.airOnly,node.airRaid,node.noAmmo,apiBattle,false,fleetFF);
+					result = sim6vs12(fleetF,fleetE,fleetFSupport,lbWaves,doNB,node.NBOnly,node.airOnly,node.airRaid,node.noAmmo,apiBattle,false,fleetFF,node.fixEngagement);
 				} else {
 					fleetF.battleType = '6v6';
-					result = sim(fleetF,fleetE,fleetFSupport,lbWaves,doNB,node.NBOnly,node.airOnly,node.airRaid,node.noAmmo,apiBattle,false,fleetFF);
+					result = sim(fleetF,fleetE,fleetFSupport,lbWaves,doNB,node.NBOnly,node.airOnly,node.airRaid,node.noAmmo,apiBattle,false,fleetFF,node.fixEngagement);
 				}
 			}
 			this.simResultPrev = { battleNum: battleInd+1, result: result };
@@ -1046,7 +1047,7 @@ var SIM = {
 	},
 	
 	runStats: function(dataInput,callback) {
-		console.log(dataInput)
+		console.log(dataInput);
 		window.C = false;
 		
 		let n = 0;
