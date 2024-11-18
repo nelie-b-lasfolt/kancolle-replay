@@ -667,38 +667,20 @@
 							<table class="multi">
 							<tr v-show="results.numNodes>1"><th>&nbsp;</th><th v-for="n in results.numNodes">{{n}}</th></tr>
 							<tr><th>{{$t('any')}}</th><td v-for="stat in results.chuha"><span class="resultBold">{{stat}}</span></td></tr>
+							<tr><th>NotAll</th><td v-for="stat in results.noChuuha"><span class="resultBold">{{stat}}</span></td></tr>
 							<tr class="tableSpace"></tr>
 							<tr v-for="n in 7" v-show="results.hasSF||n<7"><th><img :src="'assets/stats/F' + n + '.png'" :alt="$t('ship_n',[n])"/></th><td v-for="stat in results['chuha'+n]">{{stat}}</td></tr>
 							<tr class="tableSpace" v-show="results.hasCF"></tr>
 							<tr v-for="n in 6" v-show="results.hasCF"><th><img :src="'assets/stats/F' + n + '.png'" :alt="$t('ship_n',[n])"/></th><td v-for="stat in results['chuhaE'+n]">{{stat}}</td></tr>
 							</table>
 						</div>
-						<div>
-							<div><i18n-t keypath="no_chuuha_after_battle" scope="global"><template v-slot:img_chuuha><img src="assets/stats/chuuha.png" :alt="$t('moderate_damage')"/></template></i18n-t>:</div>
-							<table class="multi">
-							<tr v-show="results.numNodes>1"><th>&nbsp;</th><th v-for="n in results.numNodes">{{n}}</th></tr>
-							<tr><th>{{$t('all')}}</th><td v-for="stat in results.noChuuha">{{stat}}</td></tr>
-							</table>
-						</div>
 						<div v-show="results.numNodes>1">
-							<div>{{$t('node_reached')}}:</div>
+							<div>到達回率　平均行動回数　魚雷回数</div>
 							<table class="multi">
-							<tr><th v-for="n in results.numNodes">{{n}}</th><th><img src="assets/maps/nodeAnchor.png" style="width:20px" :title="$t('can_advance_after_desc')"/></th></tr>
-							<tr><td v-for="stat in results.nodeReached">{{stat}}</td><td>{{results.canAdvanceAfter}}</td></tr>
-							</table>
-						</div>
-						<div>
-							<div><img src="assets/stats/fp.png" :alt=""/>砲撃夜戦行動回数</div>
-							<table class="multi">
-								<tr><th v-for="n in results.numNodes">{{n}}</th></tr>
-								<tr><td v-for="a in results.actions">{{a}}</td></tr>
-							</table>
-						</div>
-						<div>
-							<div><img src="assets/stats/tp.png" :alt=""/>閉幕雷撃確率</div>
-							<table class="multi">
-								<tr><th v-for="n in results.numNodes">{{n}}</th></tr>
-								<tr><td v-for="a in results.torpedo">{{a}}</td></tr>
+							<tr><th></th><th v-for="n in results.numNodes">{{n}}</th><th><img src="assets/maps/nodeAnchor.png" style="width:20px" :title="$t('can_advance_after_desc')"/></th></tr>
+							<tr><th>到達</th><td v-for="stat in results.nodeReached">{{stat}}</td><td>{{results.canAdvanceAfter}}</td></tr>
+							<tr><th><img src="assets/stats/fp.png" :alt="行動数"/></th><td v-for="a in results.actions">{{a}}</td></tr>
+							<tr><th><img src="assets/stats/tp.png" :alt="魚雷数"/></th><td v-for="a in results.torpedo">{{a}}</td></tr>
 							</table>
 						</div>
 						<div v-show="results.fcfUsed">

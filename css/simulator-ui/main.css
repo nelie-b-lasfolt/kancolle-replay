@@ -303,7 +303,7 @@ div.divResultColsWrap div.resultCol > div {
 	}
 	&.multi {
 		border-collapse: collapse;
-		border: 2px solid #aaa;
+		border: 2px solid #ddd;
 	}
 }
 #divResults table.multi td {

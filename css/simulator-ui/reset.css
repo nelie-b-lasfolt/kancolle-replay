@@ -1,9 +1,17 @@
 /* フォント設定 */
-body {
-  font-family: Arial, sans-serif; /* フォントはシンプルに */
-  color: #333; /* メインの文字色を落ち着いたグレーに */
-  background-color: #f4f6f9; /* 背景は明るいグレー */
+:root {
+  --font-primary: 'Inter', 'Roboto', 'Helvetica Neue', Arial, sans-serif; /* メインフォント */
+  --font-monospace: 'Fira Code', 'Courier New', Courier, monospace;      /* モノスペースフォント */
 }
+
+body, table {
+  font-family: var(--font-primary);
+  font-size: 14px; /* 小さめでも読みやすいサイズ */
+  line-height: 1.5; /* 適切な行間 */
+  color: #333; /* 目に優しい暗めの文字色 */
+  background-color: #f8f9fa; /* ソフトな背景色 */
+}
+
 
 /* 見出し */
 h1, h2, h3 {
@@ -46,6 +54,7 @@ th {
   /* background-color: #34495e;
   color: #fff; */
   font-weight: bold;
+  text-align: center;
 }
 
 tr:nth-child(even) {
@@ -57,9 +66,8 @@ button, input[type="button"] {
   /* background-color: #fff; */
   /* border: solid 1px #00f; */
   padding: 2px 4px;
-  border-radius: 5px;
+  border-radius: 2px 4px;
   cursor: pointer;
-  font-size: 14px;
 }
 
 /* button:hover, input[type="button"]:hover {
