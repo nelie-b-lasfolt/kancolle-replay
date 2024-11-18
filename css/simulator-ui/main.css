@@ -298,14 +298,20 @@ div.divResultColsWrap div.resultCol > div {
 	color: red;
 }
 #divResults table {
-	border-collapse: collapse;
-}
-#divResults table td {
-	min-width: 36px;
+	& td, & th {
+	  min-width: 40px;
+	}
+	&.multi {
+		border-collapse: collapse;
+		border: 2px solid #aaa;
+	}
 }
 #divResults table.multi td {
-	border-left: 1px solid black;
-	padding: 1px 3px;
+	border-left: 1px solid #ddd;
+	padding: 0px 5px;
+}
+#divResults table.multi th {
+	text-align: center;
 }
 #divResults tr.tableSpace {
 	height: 10px;

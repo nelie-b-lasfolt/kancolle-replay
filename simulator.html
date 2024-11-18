@@ -532,7 +532,7 @@
 			</div>
 		</div>
 		<div id="divSimStats">
-			<i18n-t keypath="simulate_n_times_and_show_stats" scope="global"><template v-slot:inp_num><input type="number" min="1" :max="numSimMax" v-model="numSim" /></template></i18n-t>:
+			<i18n-t keypath="simulate_n_times_and_show_stats" scope="global"><template v-slot:inp_num><input type="number" min="0" :max="numSimMax"  step="10000" v-model="numSim"/></template></i18n-t>:
 			<div id="divSimStatsButtons">
 				<input type="button" :value="'&#9654; ' + $t('go')" :disabled="!canSim" @click="onclickGo"/>
 				<input type="button" :value="$t('clear')" v-show="results.active&&canSim" @click="onclickClear"/>
@@ -578,10 +578,44 @@
 							<table>
 							<tr><th><img src="assets/stats/flagsunk.png" :alt="$t('flagship_sunk')"/></th><td><span class="resultBold">{{results.flagSunk}}</span></td></tr>
 							</table>
-							<div><i18n-t keypath="avg_n_hp_per_run" scope="global"><template v-slot:txt_hp><span class="resultBold">-{{results.flagSunkHP}}</span></template></i18n-t></div>
-							<div><i18n-t keypath="avg_n_hp_per_boss" scope="global"><template v-slot:txt_hp><span class="resultBold">-{{results.flagSunkHPBoss}}</span></template></i18n-t></div>
-							<div><i18n-t keypath="avg_n_tp_per_run" scope="global"><template v-slot:txt_tp><span class="resultBold">{{results.transport}}</span></template></i18n-t></div>
 						</div>
+
+						<div>
+							<table>
+								<tr>
+									<th><i18n-t keypath="avg_n_hp_per_run" scope="global"><template v-slot:txt_hp></template></i18n-t></th>
+									<td><span class="resultBold"></span>-{{results.flagSunkHP}}</span></td>
+								</tr>
+								<tr>
+									<th><i18n-t keypath="avg_n_hp_per_boss" scope="global"><template v-slot:txt_hp></template></i18n-t></th>
+									<td><span class="resultBold"></span>-{{results.flagSunkHPBoss}}</span></td>
+								</tr>
+								<tr>
+									<th><i18n-t keypath="avg_n_tp_per_run" scope="global"><template v-slot:txt_tp></template></i18n-t></th>
+									<td><span class="resultBold"></span>{{results.transport}}</span></td>
+								</tr>
+							</table>
+						</div>
+						<div>
+							<div>平均行動回数(昼夜合計):</div>
+							<table>
+							<tr><th><img src="assets/stats/fp.png" :alt=""/></th><td>{{results.totalActions}}</td></tr>
+							</table>
+						</div>
+						<div>
+							<div>平均魚雷回数:</div>
+							<table>
+							<tr><th><img src="assets/stats/tp.png" :alt=""/></th><td>{{results.totalTorpedo}}</td></tr>
+							</table>
+						</div>
+						<div>
+							<div>平均夜戦回数:</div>
+							<table>
+							<tr><th><img src="assets/stats/yasen.png" :alt=""/></th><td>{{results.totalNBs}}</td></tr>
+							</table>
+						</div>
+					</div>
+					<div class="resultCol">
 						<div v-show="results.numNodes>1">
 							<div>{{$t('rank_per_battle')}}:</div>
 							<table class="multi">
@@ -595,8 +629,6 @@
 							<tr><th><img src="assets/stats/flagsunk.png" :alt="$t('flagship_sunk')"/></th><td v-for="stat in results.flagSunkNode">{{stat}}</td></tr>
 							</table>
 						</div>
-					</div>
-					<div class="resultCol">
 						<div>
 							<div><i18n-t keypath="mvp_rate_per_battle" scope="global"><template v-slot:img_mvp><img src="assets/stats/MVP.png" alt="MVP"/></template></i18n-t>:</div>
 							<table class="multi">
@@ -690,24 +722,6 @@
 							<tr><th><img src="assets/stats/steel.png" :alt="$t('steel')"/></th><td>{{results.steelRepair}}</td></tr>
 							<tr><th><img src="assets/stats/bucket.png" :alt="$t('bucket')"/></th><td>{{results.bucket}}</td></tr>
 							<tr v-show="results.damecon"><th><img src="assets/items/14.png" class="iconSlotitem" :alt="$t('repair_team')"/></th><td>{{results.damecon}}</td></tr>
-							</table>
-						</div>
-						<div>
-							<div>平均行動回数(昼夜合計):</div>
-							<table>
-							<tr><th><img src="assets/stats/fp.png" :alt=""/></th><td>{{results.totalActions}}</td></tr>
-							</table>
-						</div>
-						<div>
-							<div>平均魚雷回数:</div>
-							<table>
-							<tr><th><img src="assets/stats/tp.png" :alt=""/></th><td>{{results.totalTorpedo}}</td></tr>
-							</table>
-						</div>
-						<div>
-							<div>平均夜戦回数:</div>
-							<table>
-							<tr><th><img src="assets/stats/yasen.png" :alt=""/></th><td>{{results.totalNBs}}</td></tr>
 							</table>
 						</div>
 						<div>
