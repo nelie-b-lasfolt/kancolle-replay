@@ -402,6 +402,8 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 	results.flagredded = (ships1[0].HP/ships1[0].maxHP <= .25);
 	results.reddedIndiv = [false,false,false,false,false];
 	results.reddedIndivC = [false,false,false,false,false];
+	results.orangedIndiv = [false,false,false,false,false];
+	results.orangedIndivC = [false,false,false,false,false];
 	results.flagsunk = (ships2[0].HP <= 0);
 	results.undamaged = true;
 	results.buckets = 0;
@@ -411,7 +413,10 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 			results.reddedIndiv[i] = true;
 			if (!ships1[i].isflagship) ships1[i].protection = false;
 		}
-		if (ships1[i].HP/ships1[i].maxHP <= .5) results.undamaged = false;
+		if (ships1[i].HP/ships1[i].maxHP <= .5) {
+			results.undamaged = false;
+			results.orangedIndiv[i] = true;
+		}
 		if (ships1[i].HP/ships1[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1[i]) > BUCKETTIME) 
 			if(BUCKETCOUNT[i]) results.buckets++;
 	}
@@ -421,7 +426,10 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 			results.reddedIndivC[i] = true;
 			if (!ships1C[i].isflagship) ships1C[i].protection = false;
 		}
-		if (ships1C[i].HP/ships1C[i].maxHP <= .5) results.undamaged = false;
+		if (ships1C[i].HP/ships1C[i].maxHP <= .5) {
+			results.undamaged = false;
+			results.orangedIndivC[i] = true;
+		}
 		if (ships1C[i].HP/ships1C[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1C[i]) > BUCKETTIME) 
 			if(BUCKETCOUNT[i]) results.buckets++;
 	}
@@ -541,6 +549,8 @@ function simStatsCombined(numsims,type,foptions) {
 			if (res.redded) totalResult.nodes[j].redded++;
 			for (var k=0; k<res.reddedIndiv.length; k++) if (res.reddedIndiv[k]) totalResult.nodes[j].redIndiv[k]++;
 			for (var k=0; k<res.reddedIndivC.length; k++) if (res.reddedIndivC[k]) totalResult.nodes[j].redIndivC[k]++;
+			for (var k=0; k<res.orangedIndiv.length; k++) if (res.orangedIndiv[k]) totalResult.nodes[j].orangeIndiv[k]++;
+			for (var k=0; k<res.orangedIndivC.length; k++) if (res.orangedIndivC[k]) totalResult.nodes[j].orangeIndivC[k]++;
 			if (res.undamaged) totalResult.nodes[j].undamaged++;
 			if (res.flagsunk) totalResult.nodes[j].flagsunk++;
 			totalResult.nodes[j].ranks[res.rank]++;
@@ -930,8 +940,10 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 	}
 	
 	//closing torpedo
+	let didTorpedo = false;
 	if (!NBonly && !aironly && alive1.length+subsalive1.length > 0 && (alive2.length+subsalive2.length > 0 || alive2C.length+subsalive2C.length > 0)) {
-		if (C) BAPI.data.api_raigeki = {api_edam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_erai:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_eydam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fdam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_frai:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fydam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_ecl:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fcl:[-1,0,0,0,0,0,0,0,0,0,0,0,0]};
+	  didTorpedo = true;
+	  if (C) BAPI.data.api_raigeki = {api_edam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_erai:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_eydam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fdam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_frai:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fydam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_ecl:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fcl:[-1,0,0,0,0,0,0,0,0,0,0,0,0]};
 		torpedoPhase(alive1,subsalive1,alive2.concat(alive2C),subsalive2.concat(subsalive2C),false,(C)? BAPI.data.api_raigeki:undefined,true);
 		removeSunk(alive2); removeSunk(subsalive2);
 		removeSunk(alive2C); removeSunk(subsalive2C);
@@ -970,6 +982,7 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 	}
 	
 	var results = {};
+	results.didTorpedo = didTorpedo;
 	if (noupdate) {
 		results.rankDay = getRank(ships1,ships2.concat(ships2C));
 		results.mvpDay = F1.getMVP();
@@ -1051,6 +1064,7 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 	results.redded = false;
 	results.flagredded = (ships1[0].HP/ships1[0].maxHP <= .25);
 	results.reddedIndiv = [false,false,false,false,false];
+	results.orangedIndiv = [false,false,false,false,false];
 	results.flagsunk = (ships2[0].HP <= 0);
 	results.undamaged = true;
 	results.buckets = 0;
@@ -1060,7 +1074,10 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 			results.reddedIndiv[i] = true;
 			if (!ships1[i].isflagship) ships1[i].protection = false;
 		}
-		if (ships1[i].HP/ships1[i].maxHP <= .5) results.undamaged = false;
+		if (ships1[i].HP/ships1[i].maxHP <= .5) {
+			results.undamaged = false;
+			results.orangedIndiv[i] = true;
+		}
 		if (ships1[i].HP/ships1[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1[i]) > BUCKETTIME) 
 			if(BUCKETCOUNT[i]) results.buckets++;
 	}
@@ -1525,6 +1542,8 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 	results.flagredded = (ships1[0].HP/ships1[0].maxHP <= .25);
 	results.reddedIndiv = [false,false,false,false,false];
 	results.reddedIndivC = [false,false,false,false,false];
+	results.orangedIndiv = [false,false,false,false,false];
+	results.orangedIndivC = [false,false,false,false,false];
 	results.flagsunk = (ships2[0].HP <= 0);
 	results.undamaged = true;
 	results.buckets = 0;
@@ -1534,7 +1553,10 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 			results.reddedIndiv[i] = true;
 			if (!ships1[i].isflagship) ships1[i].protection = false;
 		}
-		if (ships1[i].HP/ships1[i].maxHP <= .5) results.undamaged = false;
+		if (ships1[i].HP/ships1[i].maxHP <= .5) {
+			results.undamaged = false;
+			results.orangedIndiv[i] = true;
+		}
 		if (ships1[i].HP/ships1[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1[i]) > BUCKETTIME) 
 			if(BUCKETCOUNT[i]) results.buckets++;
 	}
@@ -1544,7 +1566,10 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 			results.reddedIndivC[i] = true;
 			if (!ships1C[i].isflagship) ships1C[i].protection = false;
 		}
-		if (ships1C[i].HP/ships1C[i].maxHP <= .5) results.undamaged = false;
+		if (ships1C[i].HP/ships1C[i].maxHP <= .5) {
+			results.orangedIndivC[i] = true;
+			results.undamaged = false;
+		}
 		if (ships1C[i].HP/ships1C[i].maxHP <= BUCKETPERCENT || getRepairTime(ships1C[i]) > BUCKETTIME) 
 			if(BUCKETCOUNT[i]) results.buckets++;
 	}

@@ -631,6 +631,17 @@
 							</table>
 						</div>
 						<div>
+							<div><img src="assets/stats/chuuha.png" :alt="中破"/>戦闘ごとの中破率:</div>
+							<table class="multi">
+							<tr v-show="results.numNodes>1"><th>&nbsp;</th><th v-for="n in results.numNodes">{{n}}</th></tr>
+							<tr><th>{{$t('any')}}</th><td v-for="stat in results.chuha"><span class="resultBold">{{stat}}</span></td></tr>
+							<tr class="tableSpace"></tr>
+							<tr v-for="n in 7" v-show="results.hasSF||n<7"><th><img :src="'assets/stats/F' + n + '.png'" :alt="$t('ship_n',[n])"/></th><td v-for="stat in results['chuha'+n]">{{stat}}</td></tr>
+							<tr class="tableSpace" v-show="results.hasCF"></tr>
+							<tr v-for="n in 6" v-show="results.hasCF"><th><img :src="'assets/stats/F' + n + '.png'" :alt="$t('ship_n',[n])"/></th><td v-for="stat in results['chuhaE'+n]">{{stat}}</td></tr>
+							</table>
+						</div>
+						<div>
 							<div><i18n-t keypath="no_chuuha_after_battle" scope="global"><template v-slot:img_chuuha><img src="assets/stats/chuuha.png" :alt="$t('moderate_damage')"/></template></i18n-t>:</div>
 							<table class="multi">
 							<tr v-show="results.numNodes>1"><th>&nbsp;</th><th v-for="n in results.numNodes">{{n}}</th></tr>
@@ -645,10 +656,17 @@
 							</table>
 						</div>
 						<div>
-							<div>行動回数</div>
+							<div><img src="assets/stats/fp.png" :alt=""/>砲撃夜戦行動回数</div>
 							<table class="multi">
 								<tr><th v-for="n in results.numNodes">{{n}}</th></tr>
 								<tr><td v-for="a in results.actions">{{a}}</td></tr>
+							</table>
+						</div>
+						<div>
+							<div><img src="assets/stats/tp.png" :alt=""/>閉幕雷撃確率</div>
+							<table class="multi">
+								<tr><th v-for="n in results.numNodes">{{n}}</th></tr>
+								<tr><td v-for="a in results.torpedo">{{a}}</td></tr>
 							</table>
 						</div>
 						<div v-show="results.fcfUsed">
@@ -675,15 +693,21 @@
 							</table>
 						</div>
 						<div>
-							<div>平均行動回数:</div>
+							<div>平均行動回数(昼夜合計):</div>
 							<table>
-							<tr><th>★</th><td>{{results.totalActions}}</td></tr>
+							<tr><th><img src="assets/stats/fp.png" :alt=""/></th><td>{{results.totalActions}}</td></tr>
+							</table>
+						</div>
+						<div>
+							<div>平均魚雷回数:</div>
+							<table>
+							<tr><th><img src="assets/stats/tp.png" :alt=""/></th><td>{{results.totalTorpedo}}</td></tr>
 							</table>
 						</div>
 						<div>
 							<div>平均夜戦回数:</div>
 							<table>
-							<tr><th>🌙</th><td>{{results.totalNBs}}</td></tr>
+							<tr><th><img src="assets/stats/yasen.png" :alt=""/></th><td>{{results.totalNBs}}</td></tr>
 							</table>
 						</div>
 						<div>

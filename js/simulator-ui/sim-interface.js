@@ -105,6 +105,7 @@ var SIM = {
 			totalUnderway: 0,
 			totalCanAdvanceAfter: 0,
 			totalActions: 0,
+			totalTorpedo: 0,
 			totalNBs: 0,
 			nodes: [],
 		};
@@ -118,6 +119,8 @@ var SIM = {
 				taiha: 0,
 				taihaIndiv: [0,0,0,0,0,0,0],
 				taihaIndivC: [0,0,0,0,0,0],
+				chuhaIndiv: [0,0,0,0,0,0,0],
+				chuhaIndivC: [0,0,0,0,0,0],
 				sunkFAny: 0,
 				sunkFIndiv: [0,0,0,0,0,0,0],
 				sunkFIndivC: [0,0,0,0,0,0],
@@ -126,7 +129,8 @@ var SIM = {
 				dameconIndivC: [0,0,0,0,0,0],
 				undamaged: 0,
 				airStates: [0,0,0,0,0],
-				actions: 0
+				actions: 0,
+				torpedo: 0,
 			});
 		}
 	},
@@ -144,6 +148,14 @@ var SIM = {
 		if (resultSim.reddedIndivC) {
 			for (let i=0; i<resultSim.reddedIndivC.length; i++) {
 				rNode.taihaIndivC[i] += +!!resultSim.reddedIndivC[i];
+			}
+		}
+		for (let i=0; i<resultSim.orangedIndiv.length; i++) {
+			rNode.chuhaIndiv[i] += +!!resultSim.orangedIndiv[i];
+		}
+		if (resultSim.orangedIndivC) {
+			for (let i=0; i<resultSim.orangedIndivC.length; i++) {
+				rNode.chuhaIndivC[i] += +!!resultSim.orangedIndivC[i];
 			}
 		}
 		rNode.undamaged += +!!resultSim.undamaged;
@@ -185,6 +197,10 @@ var SIM = {
 		}
 		rNode.actions += resultSim.actions;
 		this._results.totalActions += resultSim.actions;
+		if(resultSim.didTorpedo) {
+			this._results.totalTorpedo++;
+		  rNode.torpedo++;
+		}
 		if(resultSim.didNB) this._results.totalNBs++ 
 	},
 	_updateResultsTotal: function(dataInput) {

@@ -3734,12 +3734,15 @@ function sim(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BAPI,no
 	}
 	
 	// closing torpedo
+	didTorpedo = false;
 	if (!NBonly && !aironly && alive1.length+subsalive1.length > 0 && alive2.length+subsalive2.length > 0) {
+		didTorpedo = true;
 		if (C) BAPI.data.api_raigeki = {api_edam:[-1,0,0,0,0,0,0],api_erai:[-1,0,0,0,0,0,0],api_eydam:[-1,0,0,0,0,0,0],api_fdam:[-1,0,0,0,0,0,0],api_frai:[-1,0,0,0,0,0,0],api_fydam:[-1,0,0,0,0,0,0],api_ecl:[-1,0,0,0,0,0,0],api_fcl:[-1,0,0,0,0,0,0]};
 		torpedoPhase(alive1,subsalive1,alive2,subsalive2,false,(C)? BAPI.data.api_raigeki:undefined);
 	}
 	
 	var results = {};
+	results.didTorpedo = didTorpedo;
 	if (noupdate) {
 		results.rankDay = getRank(ships1,ships2);
 		results.mvpDay = F1.getMVP();
@@ -3815,6 +3818,7 @@ function sim(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BAPI,no
 	results.redded = false;
 	results.flagredded = (ships1[0].HP/ships1[0].maxHP <= .25);
 	results.reddedIndiv = [false,false,false,false,false];
+	results.orangedIndiv = [false,false,false,false,false];
 	results.flagsunk = (ships2[0].HP <= 0);
 	results.undamaged = true;
 	results.buckets = 0;
@@ -3824,7 +3828,10 @@ function sim(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BAPI,no
 			results.reddedIndiv[i] = true;
 			if (!noupdate && !ships1[i].isflagship) ships1[i].protection = false;
 		}
-		if (ships1[i].HP/ships1[i].maxHP <= .5) results.undamaged = false;
+		if (ships1[i].HP/ships1[i].maxHP <= .5) {
+			results.undamaged = false;
+			results.orangedIndiv[i] = true;
+		}
 		if (ships1[i].HP/ships1[i].maxHP <= Math.max(BUCKETPERCENT, BUCKETPERCENTLIST[i]) || getRepairTime(ships1[i]) > BUCKETTIME) 
 			if(BUCKETCOUNT[i]) results.buckets++;
 		//if (ships1[i].repairsOrig && ships1[i].repairsOrig.length > ships1[i]
@@ -4143,6 +4150,7 @@ function simStats(numsims,foptions) {
 		totalEmptiedLBAS: 0,
 		totalGaugeDamage: 0,
 		totalActions: 0,
+		totalTorpedo: 0,
 		totalNBs: 0,
 		nodes: []
 	};
@@ -4152,12 +4160,14 @@ function simStats(numsims,foptions) {
 			didNB: 0, //used for rsammo calc
 			redded: 0,
 			redIndiv: [0,0,0,0,0,0],
+			orangeIndiv: [0,0,0,0,0,0],
 			undamaged: 0,
 			MVPs: [0,0,0,0,0,0],
 			ranks: {S:0,A:0,B:0,C:0,D:0,E:0},
 			flagsunk: 0,
 			airStates: [0,0,0,0,0],
-			actions: 0
+			actions: 0,
+			torpedo: 0
 		});
 	}
 	
@@ -4217,11 +4227,16 @@ function simStats(numsims,foptions) {
 			if (res.didNB) totalResult.totalNBs++;
 			if (res.redded) totalResult.nodes[j].redded++;
 			for (var k=0; k<res.reddedIndiv.length; k++) if (res.reddedIndiv[k]) totalResult.nodes[j].redIndiv[k]++;
+			for (var k=0; k<res.orangedIndiv.length; k++) if (res.orangedIndiv[k]) totalResult.nodes[j].orangeIndiv[k]++;
 			if (res.undamaged) totalResult.nodes[j].undamaged++;
 			if (res.flagsunk) totalResult.nodes[j].flagsunk++;
 			if (res.actions) {
 				totalResult.nodes[j].actions += res.actions;
 				totalResult.totalActions += res.actions;
+			}
+			if (res.didTorpedo) {
+				totalResult.nodes[j].torpedo++;
+				totalResult.totalTorpedo++;
 			}
 			totalResult.nodes[j].ranks[res.rank]++;
 			totalResult.nodes[j].MVPs[res.MVP]++;
@@ -4653,6 +4668,7 @@ function simNightFirstCombined(F1,F2,Fsupport,LBASwaves,BAPI,fixEngagement) {
 	results.redded = false;
 	results.flagredded = (ships1[0].HP/ships1[0].maxHP <= .25);
 	results.reddedIndiv = [false,false,false,false,false];
+	results.orangedIndiv = [false,false,false,false,false];
 	results.flagsunk = (ships2[0].HP <= 0);
 	results.undamaged = true;
 	results.buckets = 0;
@@ -4662,7 +4678,10 @@ function simNightFirstCombined(F1,F2,Fsupport,LBASwaves,BAPI,fixEngagement) {
 			results.reddedIndiv[i] = true;
 			if (!ships1[i].isflagship) ships1[i].protection = false;
 		}
-		if (ships1[i].HP/ships1[i].maxHP <= .5) results.undamaged = false;
+		if (ships1[i].HP/ships1[i].maxHP <= .5) {
+			results.undamaged = false;
+			results.orangedIndiv[i] = true;
+		}
 		if (ships1[i].HP/ships1[i].maxHP <= Math.max(BUCKETPERCENT, BUCKETPERCENTLIST[i]) || getRepairTime(ships1[i]) > BUCKETTIME) 
 			if(BUCKETCOUNT[i]) results.buckets++;
 	}

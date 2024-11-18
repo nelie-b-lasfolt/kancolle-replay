@@ -194,11 +194,13 @@ var UI_MAIN = Vue.createApp({
 			mvp1: [], mvp2: [], mvp3: [], mvp4: [], mvp5: [], mvp6: [], mvp7: [],
 			mvpE1: [], mvpE2: [], mvpE3: [], mvpE4: [], mvpE5: [], mvpE6: [],
 			airASP: [], airAS: [], airAP: [], airAD: [], airAI: [],
-			taiha: [], noChuuha: [], dameconAny: [], sunkFAny: [],
+			taiha: [], chuha: [], noChuuha: [], dameconAny: [], sunkFAny: [],
 			taiha1: [], taiha2: [], taiha3: [], taiha4: [], taiha5: [], taiha6: [], taiha7: [],
+			chuha1: [], chuha2: [], chuha3: [], chuha4: [], chuha5: [], chuha6: [], chuha7: [],
 			damecon1: [], damecon2: [], damecon3: [], damecon4: [], damecon5: [], damecon6: [], damecon7: [],
 			sunkF1: [], sunkF2: [], sunkF3: [], sunkF4: [], sunkF5: [], sunkF6: [], sunkF7: [],
 			taihaE1: [], taihaE2: [], taihaE3: [], taihaE4: [], taihaE5: [], taihaE6: [],
+			chuhaE1: [], chuhaE2: [], chuhaE3: [], chuhaE4: [], chuhaE5: [], chuhaE6: [],
 			dameconE1: [], dameconE2: [], dameconE3: [], dameconE4: [], dameconE5: [], dameconE6: [],
 			sunkFE1: [], sunkFE2: [], sunkFE3: [], sunkFE4: [], sunkFE5: [], sunkFE6: [],
 			fuelSupply: 0, ammoSupply: 0, bauxSupply: 0,
@@ -214,7 +216,7 @@ var UI_MAIN = Vue.createApp({
 			fuelTP: 0, ammoTP: 0, steelTP: 0, bauxTP: 0, bucketTP: 0, dameconTP: 0, underwayTP: 0,
 			perHPRes: 1, perTPRes: 1,
 			totalActions: 0, totalActionsS: 0, actions: [],
-			totalNBs: 0
+			totalTorpedo: 0, torpedo: [], totalNBs: 0
 		},
 		
 		lang: 'en',
@@ -540,18 +542,21 @@ var UI_MAIN = Vue.createApp({
 				}
 				this.results.flagSunkNode[i] = formatNum(node.flagsunk / node.num);
 				this.results.taiha[i] = formatNum(node.taiha / node.num);
+				this.results.chuha[i] = formatNum(1 - node.undamaged / node.num);
 				this.results.noChuuha[i] = formatNum(node.undamaged / node.num);
 				this.results.dameconAny[i] = formatNum(node.dameconAny / node.num);
 				this.results.sunkFAny[i] = formatNum(node.sunkFAny / node.num);
 				for (let num=1; num<=7; num++) {
 					this.results['mvp'+num][i] = formatNum(node.mvps[num-1] / node.num);
 					this.results['taiha'+num][i] = formatNum(node.taihaIndiv[num-1] / node.num);
+					this.results['chuha'+num][i] = formatNum(node.chuhaIndiv[num-1] / node.num);
 					this.results['damecon'+num][i] = formatNum(node.dameconIndiv[num-1] / node.num);
 					this.results['sunkF'+num][i] = formatNum(node.sunkFIndiv[num-1] / node.num);
 				}
 				for (let num=1; num<=6; num++) {
 					this.results['mvpE'+num][i] = formatNum(node.mvpsC[num-1] / node.num);
 					this.results['taihaE'+num][i] = formatNum(node.taihaIndivC[num-1] / node.num);
+					this.results['chuhaE'+num][i] = formatNum(node.chuhaIndivC[num-1] / node.num);
 					this.results['dameconE'+num][i] = formatNum(node.dameconIndivC[num-1] / node.num);
 					this.results['sunkFE'+num][i] = formatNum(node.sunkFIndivC[num-1] / node.num);
 				}
@@ -561,6 +566,7 @@ var UI_MAIN = Vue.createApp({
 				this.results.airAS[i] = formatNum(node.airStates[3] / node.num);
 				this.results.airASP[i] = formatNum(node.airStates[4] / node.num);
 				this.results.actions[i] = formatNum(node.actions / totalNum);
+				this.results.torpedo[i] = formatNum(node.torpedo / totalNum);
 			}
 
 			this.results.fuelSupply = formatNum(resultSim.totalFuelS / totalNum);
@@ -572,6 +578,7 @@ var UI_MAIN = Vue.createApp({
 			this.results.damecon = formatNum(resultSim.totalDamecon / totalNum);
 			this.results.underway = formatNum(resultSim.totalUnderway / totalNum);
 			this.results.totalActions = formatNum(resultSim.totalActions / totalNum);
+			this.results.totalTorpedo = formatNum(resultSim.totalTorpedo / totalNum);
 			this.results.totalNBs = formatNum(resultSim.totalNBs / totalNum);
 			
       const rateGetResource = RESOURCENODE < resultSim.nodes.length ? this.results.nodeReached[RESOURCENODE] : this.results.canAdvanceAfter;

@@ -2230,7 +2230,6 @@ function clickedWatchBattle() {
 			else
 				res = simCombined(API.combined,FLEETS1[0],FLEETS1[1],FLEETS2[j],supportF,LBASwaves,options.NB,options.NBonly,options.aironly,options.landbomb,options.noammo,BAPI,false,friendFleetF);
 		} else {
-			console.log(oprions);
 			if (ADDEDECOMBINED[ennum])
 				res = sim6vs12(FLEETS1[0],FLEETS2[j],supportF,LBASwaves,options.NB,options.NBonly,options.aironly,options.landbomb,options.noammo,BAPI,false,friendFleetF);
 			else
