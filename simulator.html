@@ -550,6 +550,39 @@
 			<div id="divResultsWarnings">
 				<div v-for="warning in results.warnings">{{$t('sim_warning.' + warning.key, warning.args)}}</div>
 			</div>
+				
+			<div class="result-controls" v-show="results.active">
+
+				<button @click="saveResults" v-if="resultsTab == 'latest'" class="save-btn">結果を保存</button>
+				
+				<div class="tabs" v-if="lastResults || savedResults">
+					<button 
+						v-if="lastResults || savedResults"
+						class="tab"
+						:class="{ active: resultsTab == 'latest' }"
+						@click="showLatest"
+					>
+						最新結果
+					</button>
+					<button 
+						v-if="lastResults"
+						class="tab"
+						:class="{ active: resultsTab == 'last' }"
+						@click="showLast"
+					>
+						直前結果
+					</button>
+					<button 
+						v-if="savedResults"
+						class="tab"
+						:class="{ active: resultsTab == 'saved' }"
+						@click="showSaved"
+					>
+						保存結果
+					</button>
+				</div>
+				
+			</div>
 			
 			<div id="divResults" ref="divResults" v-show="results.active">
 				<h3>
@@ -558,6 +591,7 @@
 				</h3>
 				<div class="note">{{$t('note_calc_wip')}}</div>
 				<div class="noteBold" v-show="results.showCFWarning">{{$t('warn_combined_fleet')}}</div>
+
 				<div>{{$t('number_of_runs')}}: {{results.totalNum}}</div>
 				<div class="divResultColsWrap">
 					<div class="resultCol">

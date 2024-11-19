@@ -219,7 +219,7 @@ var UI_MAIN = Vue.createApp({
 			totalTorpedo: 0, torpedo: [], totalNBs: 0
 		},
 		
-		lang: 'en',
+		lang: 'ja',
 		canSave: false,
 		
 		showNoticeCount: 0,
@@ -230,9 +230,15 @@ var UI_MAIN = Vue.createApp({
 		showDropdownPlayer: false,
 		showDropdownBattles: false,
 		showDropdownSettings: false,
+
+		latestResults: null,
+		lastResults:  null,
+		savedResults:  null,
+		resultsTab: 'latest'
+		
 	}),
 	mounted: function() {
-		this.$i18n.locale = localStorage.sim2_lang || 'en';
+		this.$i18n.locale = localStorage.sim2_lang || 'ja';
 		
 		this.addNewComp(this.fleetsFFriend,{ isFriend: 1 });
 		
@@ -506,6 +512,10 @@ var UI_MAIN = Vue.createApp({
 		},
 		
 		updateResults: function(resultSim) {
+			this.showLatest();
+			if(this.results.totalNum)
+				this.lastResults = JSON.stringify(this.results);
+
 			for (let key in this.results) {
 				if (key == 'errors' || key == 'warnings') continue;
 				if (Array.isArray(this.results[key])) {
@@ -641,6 +651,7 @@ var UI_MAIN = Vue.createApp({
 			this.results.underwaySunk = formatNum((resultSim.totalUnderway) / totalNum / rateSunk);
 			this.results.actionsSunk = formatNum((resultSim.totalActions) / totalNum / rateSunk);
 			
+			this.resultsTab = 'latest';
 		},
 		
 		onclickInsertBattle: function(ind) {
@@ -726,6 +737,7 @@ var UI_MAIN = Vue.createApp({
 				this.canSim = true;
 				this.showProgress = false;
 				console.log(res.result);
+
 			}
 		},
 		onclickGo: function() {
@@ -1061,6 +1073,35 @@ ${t('results.buckets')}:	${this.resultsBucketTPPer}`;
 					let luckMin = SHIPDATA[ship.mstId].LUK, luckMax = SHIPDATA[ship.mstId].LUKmax || SHIPDATA[ship.mstId].LUK;
 					ship.statsBase.luk = val == 'min' ? luckMin : val == 'max' ? luckMax : Math.max(luckMin,Math.min(luckMax,+val));
 				}
+			}
+		},
+
+		saveResults: function() {
+      this.savedResults = JSON.stringify(this.results);
+		},
+
+		showLatest: function() {
+			if(this.resultsTab != 'latest' && this.latestResults) {
+			  this.resultsTab = 'latest';
+			  this.results = this.latestResults;
+			}
+		},
+
+		showLast: function() {
+			if(this.lastResults) {
+				if(this.resultsTab == 'latest')
+					this.latestResults = this.results;
+			  this.resultsTab = 'last';
+			  this.results = JSON.parse(this.lastResults);
+			}
+		},
+		
+		showSaved: function() {
+			if(this.savedResults) {
+				if(this.resultsTab == 'latest')
+					this.latestResults = this.results;
+			  this.resultsTab = 'saved';
+			  this.results = JSON.parse(this.savedResults);
 			}
 		},
 	},
