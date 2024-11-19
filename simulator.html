@@ -581,35 +581,34 @@
 						</div>
 
 						<div>
-							<table>
-								<tr>
-									<th><i18n-t keypath="avg_n_hp_per_run" scope="global"><template v-slot:txt_hp></template></i18n-t></th>
-									<td><span class="resultBold"></span>-{{results.flagSunkHP}}</span></td>
-								</tr>
-								<tr>
-									<th><i18n-t keypath="avg_n_hp_per_boss" scope="global"><template v-slot:txt_hp></template></i18n-t></th>
-									<td><span class="resultBold"></span>-{{results.flagSunkHPBoss}}</span></td>
-								</tr>
-								<tr>
-									<th><i18n-t keypath="avg_n_tp_per_run" scope="global"><template v-slot:txt_tp></template></i18n-t></th>
-									<td><span class="resultBold"></span>{{results.transport}}</span></td>
-								</tr>
-							</table>
+							<div><i18n-t keypath="avg_n_hp_per_run" scope="global"><template v-slot:txt_hp></template></i18n-t></div>
+							<div>-{{results.flagSunkHP}}</div>
 						</div>
+
 						<div>
-							<div>平均行動回数(昼夜合計):</div>
+							<div><i18n-t keypath="avg_n_hp_per_boss" scope="global"><template v-slot:txt_hp></template></i18n-t></div>
+							<div>-{{results.flagSunkHPBoss}}</div>
+						</div>
+
+						<div>
+							<div><i18n-t keypath="avg_n_tp_per_run" scope="global"><template v-slot:txt_tp></template></i18n-t></div>
+							<div>{{results.transport}}</div>
+						</div>
+
+						<div>
+							<div><span class="tooltip" title="昼砲撃戦＋夜戦　敵味方の行動回数">平均行動数:</div>
 							<table>
 							<tr><th><img src="assets/stats/fp.png" :alt=""/></th><td>{{results.totalActions}}</td></tr>
 							</table>
 						</div>
 						<div>
-							<div>平均魚雷回数:</div>
+							<div><span class="tooltip" title="閉幕魚雷フェーズまでいった回数">平均雷撃回数:</span></div>
 							<table>
 							<tr><th><img src="assets/stats/tp.png" :alt=""/></th><td>{{results.totalTorpedo}}</td></tr>
 							</table>
 						</div>
 						<div>
-							<div>平均夜戦回数:</div>
+							<div><span class="tooltip" title="夜戦に突入した回数">平均夜戦回数:</span></div>
 							<table>
 							<tr><th><img src="assets/stats/yasen.png" :alt=""/></th><td>{{results.totalNBs}}</td></tr>
 							</table>
@@ -745,8 +744,11 @@
 						</table>
 						</div>
 						<div>
-							<div>{{$t('avg_emptied_plane_slot')}}: {{results.emptiedPlane}}</div>
-							<div>{{$t('avg_emptied_lbas_slot')}}: {{results.emptiedLBAS}}</div>
+							<div>航空機全滅率:</div>
+							<table>
+								<tr><th style="text-align: left; padding-right: 1em;">艦載機 </th><td>{{results.emptiedPlane}}</td></tr>
+								<tr><th style="text-align: left; padding-right: 1em;">基地航空隊 </th><td>{{results.emptiedLBAS}}</td></tr>
+							</table>
 						</div>
 					</div>
 				</div>
