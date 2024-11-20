@@ -1484,7 +1484,7 @@ function getSpecialAttackMod(ship,attackSpecial) {
 		mod = NBATTACKDATA[ship.attackSpecialType].dmgMod;
 		modAcc = NBATTACKDATA[ship.attackSpecialType].accMod;
 	}
-	return { modPow: mod, modAcc: SPECIALATTACKACC || modAcc };
+	return { modPow: mod, modAcc: SIMCONSTS.specialAttackAcc || modAcc };
 }
 
 function shellPhase(order1,order2,alive1,subsalive1,alive2,subsalive2,APIhou,isOASW) {
