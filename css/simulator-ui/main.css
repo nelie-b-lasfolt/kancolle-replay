@@ -661,11 +661,6 @@ table img {
 	height: 5px;
 }
 
-.save-btn {
-	position: absolute;
-	right: 10%;
-}
-
 .tabs {
 	padding-top: 10px;
 	display: flex;
@@ -680,6 +675,8 @@ table img {
 	border-bottom: none;
 	background-color: #ddd;
 	color: #444;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .tab.active {
