@@ -1,6 +1,6 @@
 /* フォント設定 */
 :root {
-  --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-primary: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   --font-monospace: 'Fira Code', 'Courier New', Courier, monospace;
 }
 
@@ -16,7 +16,6 @@ body {
   margin: 0 auto;
   padding: 20px;
 }
-
 
 /* 見出し */
 h1, h2, h3 {

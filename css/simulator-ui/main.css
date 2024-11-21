@@ -228,13 +228,16 @@ input.changed {
 	margin-right: 10px;
 }
 div.progressBarOuter {
-	width: 100px;
-	height: 16px;
+	width: 200px;
+	height: 26px;
 	border: 1px solid #ddd;
+	border-radius: 10px;
+	overflow: hidden;
 }
 div.progressBarInner {
 	height: 100%;
 	background-color: #3875D7;
+	transition: width 0.5s ease;
 }
 #divSimWatch {
 	margin-bottom: 20px;
@@ -298,19 +301,18 @@ div.divResultColsWrap div.resultCol > div {
 	color: red;
 }
 #divResults table {
-	& td, & th {
-	  min-width: 40px;
-	}
 	&.multi {
 		border-collapse: collapse;
-		border: 2px solid #ddd;
+		border: 2px solid #ccc;
 	}
 }
 #divResults table.multi td {
-	border-left: 1px solid #ddd;
+	border-left: 1px solid #ccc;
 	padding: 0px 5px;
+	min-width: 45px;
 }
 #divResults table.multi th {
+	background-color: #ddd;
 	text-align: center;
 }
 #divResults tr.tableSpace {
@@ -618,7 +620,6 @@ div.scrollAnchor > div {
 
 /* Results columns wrapper */
 .divResultColsWrap {
-	gap: 20px;
 
 	& tr {
     height: 27px;
@@ -639,7 +640,7 @@ div.scrollAnchor > div {
 .resultCol > div > div:first-child {
 	font-weight: bold;
 	margin-bottom: 5px;
-	text-wrap: nowrap;
+	word-break: keep-all;
 }
 
 /* Images in tables */
@@ -658,21 +659,6 @@ table img {
 /* Table spacing */
 .tableSpace {
 	height: 5px;
-}
-
-/* Progress bar styling */
-.progressBarOuter {
-	width: 200px;
-	height: 28px;
-	background: #eee;
-	border-radius: 10px;
-	overflow: hidden;
-}
-
-.progressBarInner {
-	height: 100%;
-	background: #4CAF50;
-	transition: width 0.3s ease;
 }
 
 .save-btn {

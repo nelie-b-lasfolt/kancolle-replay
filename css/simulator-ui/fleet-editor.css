@@ -122,35 +122,36 @@ div.fleetEditor div.equipName input {
 div.fleetEditor div.equipOptions {
 	display: flex;
 	height: 24px;
-}
-div.fleetEditor div.equipOptions img.equipIcon {
-	position: absolute;
-	width: 24px;
-	height: 24px;
-	cursor: move;
-}
-div.fleetEditor div.equipOptions input.equipCarry {
-	width: 40px;
-}
-div.fleetEditor div.equipOptions select.equipRank {
-	width: 40px;
-}
-div.fleetEditor div.equipOptions div.equipLevel {
-	margin-left: auto;
-}
-div.fleetEditor div.equipOptions div.equipLevel select {
-	height: 100%;
-	width: 40px;
-}
-div.fleetEditor div.equipOptions div.equipLevel span {
-	color: #45A9A5;
-	font-size: 12px;
-}
-div.fleetEditor div.equipOptions .rankBlue {
-	color: #4A84B5;
-}
-div.fleetEditor div.equipOptions .rankGold {
-	color: #D49C0A;
+	& img.equipIcon {
+		position: absolute;
+		width: 24px;
+		height: 24px;
+		cursor: move;
+	}
+	& select, & input {
+		height: 100%;
+		padding: 0;
+	}
+  & input.equipCarry {
+		width: 40px;
+		padding: 0 2px;
+	}
+	& select.equipRank {
+		width: 40px;
+	}
+	& div.equipLevel {
+		margin-left: auto;
+		& span {
+			color: #45A9A5;
+			font-size: 12px;
+		}
+	}
+	& .rankBlue {
+		color: #4A84B5;
+	}
+	& .rankGold {
+		color: #D49C0A;
+	}
 }
 
 div.fleetEditorAddl {
