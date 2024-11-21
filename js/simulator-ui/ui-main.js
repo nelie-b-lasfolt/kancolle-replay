@@ -233,7 +233,7 @@ var UI_MAIN = Vue.createApp({
 
 		latestResults: null,
 		lastResults:  null,
-		savedResults:  null,
+		savedResults:  [],
 		resultsTab: 'latest'
 		
 	}),
@@ -1075,7 +1075,20 @@ ${t('results.buckets')}:	${this.resultsBucketTPPer}`;
 		},
 
 		saveResults: function() {
-      this.savedResults = JSON.stringify(this.results);
+			const now = new Date();
+			const hours = String(now.getHours()).padStart(2, '0');
+			const minutes = String(now.getMinutes()).padStart(2, '0');
+			const time = `${hours}:${minutes}`;
+
+      this.savedResults.push({
+				results: JSON.stringify(this.results),
+				name: time
+			});
+		},
+
+		removeResults: function() {
+      this.savedResults.splice(this.resultsTab, 1);
+			this.resultsTab = 'latest';
 		},
 
 		showLatest: function() {
@@ -1094,12 +1107,12 @@ ${t('results.buckets')}:	${this.resultsBucketTPPer}`;
 			}
 		},
 		
-		showSaved: function() {
-			if(this.savedResults) {
+		showSaved: function(index) {
+			if(this.savedResults[index]) {
 				if(this.resultsTab == 'latest')
 					this.latestResults = this.results;
-			  this.resultsTab = 'saved';
-			  this.results = JSON.parse(this.savedResults);
+			  this.resultsTab = index;
+			  this.results = JSON.parse(this.savedResults[index].results);
 			}
 		},
 	},
