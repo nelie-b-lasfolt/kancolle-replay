@@ -1102,6 +1102,7 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 
 //------------------
 function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BAPI,noupdate,friendFleet) {
+	ACTIONS = 0;
 	var F2C = F2.combinedWith;
 	var ships1 = F1.ships, ships2 = F2.ships, ships1C = F1C.ships, ships2C = F2C.ships;
 	var alive1 = [], alive1C = [], alive2 = [], alive2C = [], subsalive1 = [], subsalive1C = [], subsalive2 = [], subsalive2C = [];
@@ -1588,6 +1589,8 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		updateMorale(ships1,results.rank,((didNB)? 0 : results.MVP),NBonly,didNB);
 		updateMorale(ships1C,results.rank,results.MVPC,NBonly,didNB);
 	}
+	
+	results.actions = ACTIONS;
 	
 	return results;
 }

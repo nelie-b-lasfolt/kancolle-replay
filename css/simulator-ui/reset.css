@@ -1,19 +1,18 @@
 /* フォント設定 */
 :root {
   --font-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-monospace: 'Fira Code', 'Courier New', Courier, monospace;      /* モノスペースフォント */
+  --font-monospace: 'Fira Code', 'Courier New', Courier, monospace;
 }
 
 body, table {
   font-family: var(--font-primary);
-  font-size: 14px; /* 小さめでも読みやすいサイズ */
-  color: #333; /* 目に優しい暗めの文字色 */
-  background-color: #f8f9fa; /* ソフトな背景色 */
-  line-height: 1.5; /* 適切な行間 */
+  color: #333;
+  background-color: #f8f9fa;
+  line-height: 1.5;
 }
 
 body {
-  max-width: 1200px;
+  min-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -21,7 +20,7 @@ body {
 
 /* 見出し */
 h1, h2, h3 {
-  color: #2c3e50; /* 少し濃いめのダークブルー */
+  color: #2c3e50;
   font-weight: 600;
   margin: 1em 0 0.5em;
 }
