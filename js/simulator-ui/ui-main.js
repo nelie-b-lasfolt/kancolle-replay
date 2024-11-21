@@ -512,10 +512,6 @@ var UI_MAIN = Vue.createApp({
 		},
 		
 		updateResults: function(resultSim) {
-			this.showLatest();
-			if(this.results.totalNum)
-				this.lastResults = JSON.stringify(this.results);
-
 			for (let key in this.results) {
 				if (key == 'errors' || key == 'warnings') continue;
 				if (Array.isArray(this.results[key])) {
@@ -725,6 +721,8 @@ var UI_MAIN = Vue.createApp({
 				this.results.warnings = res.warnings.filter(obj => this._includeError(obj)).map(obj => ({ key: obj.key, args: obj.args }));
 			}
 			if (res.didReset) {
+				if(this.results.active)
+					this.lastResults = JSON.stringify(this.results);
 				this.results.active = false;
 			}
 			if (res.progress != null) {
@@ -737,7 +735,6 @@ var UI_MAIN = Vue.createApp({
 				this.canSim = true;
 				this.showProgress = false;
 				console.log(res.result);
-
 			}
 		},
 		onclickGo: function() {
@@ -746,6 +743,7 @@ var UI_MAIN = Vue.createApp({
 			this.numSim = Math.min(this.numSim,CONST.numSimMax);
 			this.canSim = false;
 			this.showProgress = true;
+			this.showLatest();
 			SIM.runStats(CONVERT.uiToSimInput(this),this.callbackSimStats);
 			
 			this.results.showCFWarning = !!(this.fleetFMain.combined || this.battles.find(battle => +battle.formation == 6 || battle.enemyComps.find(comp => comp.fleet.combined || comp.fleet.formation == 6)));
