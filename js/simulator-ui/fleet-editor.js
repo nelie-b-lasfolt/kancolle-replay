@@ -397,6 +397,8 @@ var UI_FLEETEDITOR = Vue.createApp({
 		presetListComp: [],
 		
 		fleet: FLEET_MODEL.getBlankFleet(),
+
+		initialMorale: 49,
 	}),
 	mounted: function() {
 		for (let world in ENEMYCOMPS) {
@@ -444,6 +446,7 @@ var UI_FLEETEDITOR = Vue.createApp({
 			let shipPrev = this.fleet[shipsProp][ind];
 			let ship = this.fleet[shipsProp][ind] = FLEET_MODEL.getDefaultShip(mstId,ind);
 			if (this.fleet.isFriend && SHIPDATA[mstId] && SHIPDATA[mstId].LUKmax) ship.statsBase.luk = SHIPDATA[mstId].LUKmax;
+			else if(this.initialMorale) ship.morale = this.initialMorale;
 			let eqDef;
 			if (mstId > 0 && (eqDef = SHIPDATA[mstId].EQUIPS)) {
 				for (let i=0; i<eqDef.length; i++) {

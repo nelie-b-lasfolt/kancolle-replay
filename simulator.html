@@ -1265,8 +1265,17 @@
 				<label v-show="fleet.combined"><input type="radio" value="14" v-model="fleet.formation" /><img src="assets/stats/form14.png" /></label>
 			</div>
 		</div>
-		<div style="margin:10px">
-			<label>{{$t('set_all_morale_to')}}: </label><input type="button" value="49" @click="onclickSetMoraleAll(49)"/> <input type="button" value="85" @click="onclickSetMoraleAll(85)"/>
+		<div style="display: flex; gap: 30px; margin: 10px;">
+			<div>
+				<label>{{$t('set_all_morale_to')}}: </label>
+				<input type="button" value="85" @click="onclickSetMoraleAll(85)" style="width: 30px"/>
+				<input type="button" value="49" @click="onclickSetMoraleAll(49)" style="width: 30px"/> 
+				<input type="button" value="0" @click="onclickSetMoraleAll(0)" style="width: 30px"/> 
+			</div>
+			<div>
+				<label>cond値 初期値:</label>
+				<input type="number" v-model.number="initialMorale" min="0" max="100" style="width: 4em"/>
+			</div>
 		</div>
 	</div>
 	<div v-show="showKC3ProfileHelp">
