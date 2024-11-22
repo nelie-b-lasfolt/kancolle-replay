@@ -48,7 +48,7 @@ var MECHANICS_LIST = [
 	{ key: 'enable_AACIRework', name: 'AACI Rework (Sequential Roll + New Priority)' },
 ];
 
-
+window.PHASES = {LBAS:0, AIR:1, SUPPORT:2, ASW:3, OPENING_TORPEDO:4, SHELL1:5, SHELL2:6, CLOSING_TORPEDO:7,FRIEND:8,NB:9}
 
 
 var UI_MAIN = Vue.createApp({
@@ -216,7 +216,9 @@ var UI_MAIN = Vue.createApp({
 			fuelTP: 0, ammoTP: 0, steelTP: 0, bauxTP: 0, bucketTP: 0, dameconTP: 0, underwayTP: 0,
 			perHPRes: 1, perTPRes: 1,
 			totalActions: 0, totalActionsS: 0, actions: [],
-			totalTorpedo: 0, torpedo: [], totalNBs: 0
+			totalTorpedo: 0, torpedo: [], totalNBs: 0,
+			phaseDeads: [],
+			totalPhaseDeads: [],
 		},
 		
 		lang: 'ja',
@@ -573,6 +575,7 @@ var UI_MAIN = Vue.createApp({
 				this.results.airASP[i] = formatNum(node.airStates[4] / node.num);
 				this.results.actions[i] = formatNum(node.actions / totalNum);
 				this.results.torpedo[i] = formatNum(node.torpedo / totalNum);
+				this.results.phaseDeads[i] = node.phaseDeads.map(x => formatNum(x / totalNum));
 			}
 
 			this.results.fuelSupply = formatNum(resultSim.totalFuelS / totalNum);
@@ -647,6 +650,8 @@ var UI_MAIN = Vue.createApp({
 			this.results.underwaySunk = formatNum((resultSim.totalUnderway) / totalNum / rateSunk);
 			this.results.actionsSunk = formatNum((resultSim.totalActions) / totalNum / rateSunk);
 			
+			this.results.totalPhaseDeads = resultSim.totalPhaseDeads.map(x => formatNum(x / totalNum));
+
 			this.resultsTab = 'latest';
 		},
 		
