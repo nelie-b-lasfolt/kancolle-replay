@@ -157,6 +157,23 @@ var UI_MAIN = Vue.createApp({
 			balloonOppoAirFlat: SIMCONSTS.balloonOppoAirFlat.slice(),
 			balloonOppoLBASMod: SIMCONSTS.balloonOppoLBASMod.slice(),
 			balloonOppoLBASFlat: SIMCONSTS.balloonOppoLBASFlat.slice(),
+			
+			resultItems: {
+			  finalRank: true,
+				bossSunk: true,
+				battleRank: true,
+				mvp: true,
+				airState: true,
+				taiha: true,
+				chuha: true,
+				reached: true,
+				bossDamage: true,
+				tp: true,
+				phases: true,
+				actions: true,
+				cost: true,
+				emptiedPlane: true,
+			}
 		},
 		settingsFCF: {
 			los: null,

@@ -52,6 +52,7 @@
 						<div class="navButton sub" @click="onclickNavButton('divSettingsHistoricalScroll')">{{$t('historical_bonus')}}</div>
 						<div class="navButton sub" @click="onclickNavButton('divSettingsMechanicsScroll')">{{$t('mechanics')}}</div>
 						<div class="navButton sub" @click="onclickNavButton('divSettingsAdvancedScroll')">{{$t('show_advanced')}}</div>
+						<div class="navButton sub" @click="onclickNavButton('divSettingsResultItemsScroll')">表示項目設定</div>
 					</div>
 				</div>
 				<div class="navButton" @click="onclickNavButton('divSimulationScroll')">{{$t('simulation')}}</div>
@@ -504,6 +505,35 @@
 				</div>
 			</div>
 
+			<div id="divSettingsResultItems">
+				<div class="scrollAnchor"><div ref="divSettingsResultItemsScroll"></div></div>
+				<div class="collapseButton" @click="settings.showResultItems=!settings.showResultItems">
+					<div><span class="subheader">表示項目:</span></div>
+					<div>
+						<span v-show="!settings.showResultItems">[+]</span>
+						<span v-show="settings.showResultItems">[&#8722;]</span>
+					</div>
+				</div>
+				<div class="subsection" v-show="settings.showResultItems">
+					<label><input type="checkbox" v-model="settings.resultItems.finalRank"/>出撃あたり最終評価</label>
+					<label><input type="checkbox" v-model="settings.resultItems.bossSunk"/>ボス撃沈率</label>
+					<label><input type="checkbox" v-model="settings.resultItems.battleRank"/>戦闘ごと評価</label>
+					<label><input type="checkbox" v-model="settings.resultItems.mvp"/>MVP率</label>
+					<label><input type="checkbox" v-model="settings.resultItems.airState"/>戦闘ごとの制空状態</label>
+					<label><input type="checkbox" v-model="settings.resultItems.taiha"/>戦闘ごと大破率</label>
+					<label><input type="checkbox" v-model="settings.resultItems.chuha"/>戦闘ごと中破率</label>
+					<label><input type="checkbox" v-model="settings.resultItems.reached"/>ノード到達率</label>
+					<label><input type="checkbox" v-model="settings.resultItems.bossDamage"/>ボス削り量</label>
+					<label><input type="checkbox" v-model="settings.resultItems.tp"/>TP関連</label>
+					<label><input type="checkbox" v-model="settings.resultItems.phases"/>フェーズ発生回数</label>
+					<label><input type="checkbox" v-model="settings.resultItems.actions"/>行動回数</label>
+					<label><input type="checkbox" v-model="settings.resultItems.cost"/>消費コスト</label>
+					<label><input type="checkbox" v-model="settings.resultItems.emptiedPlane"/>航空機全滅率</label>
+				</div>
+			</div>
+		</div>
+
+		<div>
 			<div>
 				<input type="button" :value="$t('restore_defaults')" @click="onclickRestoreSettings"/>
 			</div>
@@ -531,6 +561,7 @@
 				<span v-show="isRunningWatch">&nbsp;<input type="button" :value="$t('watch_cancel')" @click="isRunningWatch=false"/></span>
 			</div>
 		</div>
+
 		<div id="divSimStats">
 			<i18n-t keypath="simulate_n_times_and_show_stats" scope="global"><template v-slot:inp_num><input type="number" min="0" :max="numSimMax"  step="10000" v-model="numSim"/></template></i18n-t>:
 			<div id="divSimStatsButtons">
@@ -601,7 +632,7 @@
 				<div>{{$t('number_of_runs')}}: {{results.totalNum}}</div>
 				<div class="divResultColsWrap">
 					<div class="resultCol">
-						<div>
+						<div v-if="settings.resultItems.finalRank">
 							<div>出撃あたり最終評価:</div>
 							<table>
 							<tr><th><img src="assets/stats/S.png" alt="S"/></th><td><span class="resultBold">{{results.rankS}}</span></td></tr>
@@ -613,41 +644,41 @@
 							<tr><th><img src="assets/stats/retreat.png" :alt="$t('retreat')"/></th><td>{{results.retreat}}</td></tr>
 							</table>
 						</div>
-						<div>
+						<div v-if="settings.resultItems.bossSunk">
 							<div>{{$t('enemy_flagship_sunk_rate')}}:</div>
 							<table>
 							<tr><th><img src="assets/stats/flagsunk.png" :alt="$t('flagship_sunk')"/></th><td><span class="resultBold">{{results.flagSunk}}</span></td></tr>
 							</table>
 						</div>
 
-						<div>
+						<div v-if="settings.resultItems.bossDamage">
 							<div>出撃あたり削り</div>
 							<div>{{results.flagSunkHP}}</div>
 						</div>
 
-						<div>
+						<div v-if="settings.resultItems.bossDamage">
 							<div>ボスあたり削り</div>
 							<div>{{results.flagSunkHPBoss}}</div>
 						</div>
 
-						<div>
+						<div v-if="settings.resultItems.tp">
 							<div><i18n-t keypath="avg_n_tp_per_run" scope="global"><template v-slot:txt_tp></template></i18n-t></div>
 							<div>{{results.transport}}</div>
 						</div>
 
-						<div>
+						<div v-if="settings.resultItems.actions">
 							<div><span class="tooltip" title="昼砲撃戦＋夜戦　敵味方の行動回数">平均行動数:</div>
 							<table>
 							<tr><th><img src="assets/stats/fp.png" :alt=""/></th><td>{{results.totalActions}}</td></tr>
 							</table>
 						</div>
-						<div>
+						<div v-if="settings.resultItems.phases">
 							<div><span class="tooltip" title="閉幕魚雷フェーズまでいった回数">平均雷撃回数:</span></div>
 							<table>
 							<tr><th><img src="assets/stats/tp.png" :alt=""/></th><td>{{results.totalTorpedo}}</td></tr>
 							</table>
 						</div>
-						<div>
+						<div v-if="settings.resultItems.phases">
 							<div><span class="tooltip" title="夜戦に突入した回数">平均夜戦回数:</span></div>
 							<table>
 							<tr><th><img src="assets/stats/yasen.png" :alt=""/></th><td>{{results.totalNBs}}</td></tr>
@@ -655,7 +686,7 @@
 						</div>
 					</div>
 					<div class="resultCol">
-						<div v-show="results.numNodes>1">
+						<div v-show="results.numNodes>1" v-if="settings.resultItems.battleRank">
 							<div>{{$t('rank_per_battle')}}:</div>
 							<table class="multi">
 							<tr><th>&nbsp;</th><th v-for="n in results.numNodes">{{n}}</th></tr>
@@ -668,7 +699,7 @@
 							<tr><th><img src="assets/stats/flagsunk.png" :alt="$t('flagship_sunk')"/></th><td v-for="stat in results.flagSunkNode">{{stat}}</td></tr>
 							</table>
 						</div>
-						<div>
+						<div v-if="settings.resultItems.mvp">
 							<div><i18n-t keypath="mvp_rate_per_battle" scope="global"><template v-slot:img_mvp><img src="assets/stats/MVP.png" alt="MVP"/></template></i18n-t>:</div>
 							<table class="multi">
 							<tr v-show="results.numNodes>1"><th>&nbsp;</th><th v-for="n in results.numNodes">{{n}}</th></tr>
@@ -677,7 +708,7 @@
 							<tr v-for="n in 6" v-show="results.hasCF"><th><img :src="'assets/stats/F' + n + '.png'" :alt="$t('ship_n',[n])"/></th><td v-for="stat in results['mvpE'+n]">{{stat}}</td></tr>
 							</table>
 						</div>
-						<div>
+						<div v-if="settings.resultItems.airState">
 							<div>{{$t('air_state_rate_per_battle')}}:</div>
 							<table class="multi">
 							<tr v-show="results.numNodes>1"><th>&nbsp;</th><th v-for="n in results.numNodes">{{n}}</th></tr>
@@ -690,7 +721,7 @@
 						</div>
 					</div>
 					<div class="resultCol">
-						<div>
+						<div v-if="settings.resultItems.taiha">
 							<div><i18n-t keypath="taiha_rate_per_battle" scope="global"><template v-slot:img_taiha><img src="assets/stats/taiha.png" :alt="$t('heavy_damage')"/></template></i18n-t>:</div>
 							<table class="multi">
 							<tr v-show="results.numNodes>1"><th>&nbsp;</th><th v-for="n in results.numNodes">{{n}}</th></tr>
@@ -701,10 +732,10 @@
 							<tr v-for="n in 6" v-show="results.hasCF"><th><img :src="'assets/stats/F' + n + '.png'" :alt="$t('ship_n',[n])"/></th><td v-for="stat in results['taihaE'+n]">{{stat}}</td></tr>
 							</table>
 						</div>
-						<div v-show="results.fcfUsed">
+						<div v-show="results.fcfUsed" v-if="settings.resultItems.taiha">
 							<div><i18n-t keypath="fcf_used" scope="global"><template v-slot:img_fcf><img src="assets/items/28.png"/></template></i18n-t>: {{results.fcfUsed}}</div>
 						</div>
-						<div>
+						<div v-if="settings.resultItems.chuha">
 							<div><img src="assets/stats/chuuha.png" :alt="中破"/>戦闘ごとの中破率:</div>
 							<table class="multi">
 							<tr v-show="results.numNodes>1"><th>&nbsp;</th><th v-for="n in results.numNodes">{{n}}</th></tr>
@@ -716,18 +747,33 @@
 							<tr v-for="n in 6" v-show="results.hasCF"><th><img :src="'assets/stats/F' + n + '.png'" :alt="$t('ship_n',[n])"/></th><td v-for="stat in results['chuhaE'+n]">{{stat}}</td></tr>
 							</table>
 						</div>
-						<div v-show="results.numNodes>1">
-							<div>到達回率　平均行動回数　魚雷回数</div>
+						<div v-if="settings.resultItems.reached || settings.resultItems.actions || settings.resultItems.phases">
+							<div>
+								<span v-if="results.numNodes>1 && settings.resultItems.reached">到達回率</span>
+								<span v-if="settings.resultItems.actions">平均行動回数</span>
+								<span v-if="settings.resultItems.phases">魚雷回数</span>
+							</div>
 							<table class="multi">
-							<tr><th></th><th v-for="n in results.numNodes">{{n}}</th><th><img src="assets/maps/nodeAnchor.png" style="width:20px" :title="$t('can_advance_after_desc')"/></th></tr>
-							<tr><th>到達</th><td v-for="stat in results.nodeReached">{{stat}}</td><td>{{results.canAdvanceAfter}}</td></tr>
-							<tr><th><img src="assets/stats/fp.png" :alt="行動数"/></th><td v-for="a in results.actions">{{a}}</td></tr>
-							<tr><th><img src="assets/stats/tp.png" :alt="魚雷数"/></th><td v-for="a in results.torpedo">{{a}}</td></tr>
+								<tr>
+									<th></th><th v-for="n in results.numNodes">{{n}}</th>
+									<th v-if="results.numNodes>1 && settings.resultItems.reached">
+										<img src="assets/maps/nodeAnchor.png" style="width:20px" :title="$t('can_advance_after_desc')"/>
+									</th>
+								</tr>
+								<tr v-if="results.numNodes>1 && settings.resultItems.reached">
+									<th>到達</th><td v-for="stat in results.nodeReached">{{stat}}</td><td>{{results.canAdvanceAfter}}</td>
+								</tr>
+								<tr v-if="settings.resultItems.actions">
+									<th><img src="assets/stats/fp.png" :alt="行動数"/></th><td v-for="a in results.actions">{{a}}</td>
+								</tr>
+								<tr v-if="settings.resultItems.phases">
+									<th><img src="assets/stats/tp.png" :alt="魚雷数"/></th><td v-for="a in results.torpedo">{{a}}</td>
+								</tr>
 							</table>
 						</div>
 					</div>
 					<div class="resultCol">
-						<div>
+						<div v-if="settings.resultItems.cost">
 							<div><span class="tooltip" :title="$t('avg_resupply_tooltip')">{{$t('avg_resupply')}}</span>:</div>
 							<table>
 							<tr><th><img src="assets/stats/fuel.png" :alt="$t('fuel')"/></th><td>{{results.fuelSupply}}</td></tr>
@@ -736,7 +782,7 @@
 							<!-- <tr v-show="results.underway"><th><img src="assets/items/35.png" class="iconSlotitem" :alt="$t('underway_resupply')"/></th><td>{{results.underway}}</td></tr> -->
 							</table>
 						</div>
-						<div>
+						<div v-if="settings.resultItems.cost">
 							<div>{{$t('avg_repair')}}:</div>
 							<table>
 							<tr><th><img src="assets/stats/fuel.png" :alt="$t('fuel')"/></th><td>{{results.fuelRepair}}</td></tr>
@@ -745,7 +791,7 @@
 							<tr v-show="results.damecon"><th><img src="assets/items/14.png" class="iconSlotitem" :alt="$t('repair_team')"/></th><td>{{results.damecon}}</td></tr>
 							</table>
 						</div>
-						<div>
+						<div v-if="settings.resultItems.cost">
 							<div>
 								<i18n-t keypath="avg_resource_per" scope="global">
 									<template v-slot:avg_res><span class="tooltip" :title="$t('avg_resource_tooltip')">{{$t('avg_resource')}}</span></template>
@@ -764,7 +810,7 @@
 							<tr><th><img src="assets/stats/fp.png" :alt=""/></th><td><span class="resultBold">{{results.totalActionsS}}</span></td></tr>
 							</table>
 						</div>
-						<div>
+						<div v-if="settings.resultItems.cost && settings.resultItems.bossSunk">
 							<div>
 								<i18n-t keypath="avg_resource_per" scope="global">
 									<template v-slot:avg_res><span class="tooltip" :title="$t('avg_resource_tooltip')">{{$t('avg_resource')}}</span></template>
@@ -783,7 +829,7 @@
 							<tr><th><img src="assets/stats/fp.png" :alt=""/></th><td><span class="resultBold">{{results.actionsSunk}}</span></td></tr>	
 						</table>
 						</div>
-						<div>
+						<div v-if="settings.resultItems.emptiedPlane">
 							<div>航空機全滅率:</div>
 							<table>
 								<tr><th style="text-align: left; padding-right: 1em;">艦載機 </th><td>{{results.emptiedPlane}}</td></tr>
@@ -899,16 +945,16 @@
 					<div>フェーズごと撃沈数</div>
 					<table class="multi">
 						<tr><th>&nbsp;</th><th v-for="n in results.numNodes">{{n}}</th><th>合計</th></tr>
-						<tr v-if="results.totalPhaseDeads[0]!=0"><th>基地</th><td v-for="stat in results.phaseDeads">{{stat[0]}}</td><td>{{results.totalPhaseDeads[0]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[1]!=0"><th>航空戦</th><td v-for="stat in results.phaseDeads">{{stat[1]}}</td><td>{{results.totalPhaseDeads[1]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[2]!=0"><th>支援</th><td v-for="stat in results.phaseDeads">{{stat[2]}}</td><td>{{results.totalPhaseDeads[2]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[3]!=0"><th>先制対潜</th><td v-for="stat in results.phaseDeads">{{stat[3]}}</td><td>{{results.totalPhaseDeads[3]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[4]!=0"><th>先制雷撃</th><td v-for="stat in results.phaseDeads">{{stat[4]}}</td><td>{{results.totalPhaseDeads[4]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[5]!=0"><th>砲撃戦１</th><td v-for="stat in results.phaseDeads">{{stat[5]}}</td><td>{{results.totalPhaseDeads[5]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[6]!=0"><th>砲撃戦２</th><td v-for="stat in results.phaseDeads">{{stat[6]}}</td><td>{{results.totalPhaseDeads[6]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[7]!=0"><th>閉幕雷撃</th><td v-for="stat in results.phaseDeads">{{stat[7]}}</td><td>{{results.totalPhaseDeads[7]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[8]!=0"><th>友軍</th><td v-for="stat in results.phaseDeads">{{stat[8]}}</td><td>{{results.totalPhaseDeads[8]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[9]>0"><th>夜戦</th><td v-for="stat in results.phaseDeads">{{stat[9]}}</td><td>{{results.totalPhaseDeads[9]}}</td></tr>
+						<tr v-if="results.totalPhaseDeads[0]!='0'"><th>基地    </th><td v-for="stat in results.phaseDeads">{{stat[0]}}</td><td>{{results.totalPhaseDeads[0]}}</td></tr>
+						<tr v-if="results.totalPhaseDeads[1]!='0'"><th>航空戦  </th><td v-for="stat in results.phaseDeads">{{stat[1]}}</td><td>{{results.totalPhaseDeads[1]}}</td></tr>
+						<tr v-if="results.totalPhaseDeads[2]!='0'"><th>支援    </th><td v-for="stat in results.phaseDeads">{{stat[2]}}</td><td>{{results.totalPhaseDeads[2]}}</td></tr>
+						<tr v-if="results.totalPhaseDeads[3]!='0'"><th>先制対潜</th><td v-for="stat in results.phaseDeads">{{stat[3]}}</td><td>{{results.totalPhaseDeads[3]}}</td></tr>
+						<tr v-if="results.totalPhaseDeads[4]!='0'"><th>先制雷撃</th><td v-for="stat in results.phaseDeads">{{stat[4]}}</td><td>{{results.totalPhaseDeads[4]}}</td></tr>
+						<tr v-if="results.totalPhaseDeads[5]!='0'"><th>砲撃戦１</th><td v-for="stat in results.phaseDeads">{{stat[5]}}</td><td>{{results.totalPhaseDeads[5]}}</td></tr>
+						<tr v-if="results.totalPhaseDeads[6]!='0'"><th>砲撃戦２</th><td v-for="stat in results.phaseDeads">{{stat[6]}}</td><td>{{results.totalPhaseDeads[6]}}</td></tr>
+						<tr v-if="results.totalPhaseDeads[7]!='0'"><th>閉幕雷撃</th><td v-for="stat in results.phaseDeads">{{stat[7]}}</td><td>{{results.totalPhaseDeads[7]}}</td></tr>
+						<tr v-if="results.totalPhaseDeads[8]!='0'"><th>友軍    </th><td v-for="stat in results.phaseDeads">{{stat[8]}}</td><td>{{results.totalPhaseDeads[8]}}</td></tr>
+						<tr v-if="results.totalPhaseDeads[9]!='0'"><th>夜戦    </th><td v-for="stat in results.phaseDeads">{{stat[9]}}</td><td>{{results.totalPhaseDeads[9]}}</td></tr>
 					</table>
 				</div>
 			</div>
