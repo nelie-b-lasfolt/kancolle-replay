@@ -974,8 +974,7 @@
 	</div>
 	
 	<div id="divOther">
-		<div><span class="header">{{$t('change_log_header')}}:</span></div>
-		<div>★は独自カスタマイズ内容</div>
+		<div><span class="header">{{$t('change_log_header')}}:</span> (★は独自カスタマイズ内容) </div>
 		<template v-for="(obj,idx) in $i18n.messages[$i18n.locale].change_log">
 		<div v-if="idx < 5">
 			{{obj.date}} - 
@@ -1325,6 +1324,7 @@
 					<template v-slot:img_lv><img src="assets/stats/lv.png"/></template>
 				</i18n-t></label>
 				<label><input type="checkbox" v-model="preserveBonus"/>{{$t('preserve_bonus_on_change')}}</label>
+				<label v-if="fleet.isPlayer || fleet.isSupport"><input type="checkbox" v-model="preserveEquip"/>艦の変更時に装備を維持</label>
 				<input type="button" :value="$t('show_additional_stats')" @click="onclickAdditionalStats(keyS)" />
 			</div>
 		</div></div>
@@ -1356,7 +1356,7 @@
 				<input type="button" value="49" @click="onclickSetMoraleAll(49)" style="width: 30px"/> 
 				<input type="button" value="0" @click="onclickSetMoraleAll(0)" style="width: 30px"/> 
 			</div>
-			<div>
+			<div v-if="fleet.isPlayer || fleet.isSupport">
 				<label>cond値 初期値:</label>
 				<input type="number" v-model.number="initialMorale" min="0" max="100" style="width: 4em"/>
 			</div>

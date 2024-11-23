@@ -382,6 +382,7 @@ var UI_FLEETEDITOR = Vue.createApp({
 		showEquipBonus: true,
 		autoScaleStats: true,
 		preserveBonus: false,
+		preserveEquip: true,
 		
 		loadCode: '',
 		loadCodeFleet: 1,
@@ -446,7 +447,18 @@ var UI_FLEETEDITOR = Vue.createApp({
 			let shipPrev = this.fleet[shipsProp][ind];
 			let ship = this.fleet[shipsProp][ind] = FLEET_MODEL.getDefaultShip(mstId,ind);
 			if (this.fleet.isFriend && SHIPDATA[mstId] && SHIPDATA[mstId].LUKmax) ship.statsBase.luk = SHIPDATA[mstId].LUKmax;
-			else if(this.initialMorale) ship.morale = this.initialMorale;
+
+			if(this.fleet.isPlayer || this.fleet.isSupport) {
+				if(this.initialMorale) ship.morale = this.initialMorale;
+        if(this.preserveEquip) {
+					shipPrev.equips.forEach((eq, i) => {
+						ship.equips[i] = eq;
+					});
+					
+					FLEET_MODEL.updateEquipStats(ship);
+				};
+			}
+			
 			let eqDef;
 			if (mstId > 0 && (eqDef = SHIPDATA[mstId].EQUIPS)) {
 				for (let i=0; i<eqDef.length; i++) {
