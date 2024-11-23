@@ -974,10 +974,24 @@
 	</div>
 	
 	<div id="divOther">
+		<div><span class="header">{{$t('change_log_header')}}:</span></div>
+		<div>★は独自カスタマイズ内容</div>
+		<template v-for="(obj,idx) in $i18n.messages[$i18n.locale].change_log">
+		<div v-if="idx < 5">
+			{{obj.date}} - 
+			<i18n-t :keypath="'change_log[' + idx + '].txt'" scope="global">
+				<template v-for="(link,i) in obj.links" v-slot:['link'+i]>
+					<a :href="$t('change_log[' + idx + '].links[' + i + '].url')" target="_blank">
+						{{$t('change_log[' + idx + '].links[' + i + '].txt')}}
+					</a>
+				</template>
+			</i18n-t>
+		</div>
+	  </template>
+
 		<details>
-			<summary><span class="header">{{$t('change_log_header')}}:</span></summary>
-			<div>★は独自カスタマイズ内容</div>
-			<div v-for="(obj,idx) in $i18n.messages[$i18n.locale].change_log">
+			<template v-for="(obj,idx) in $i18n.messages[$i18n.locale].change_log">
+			<div v-if="idx >= 5">
 				{{obj.date}} - <i18n-t :keypath="'change_log[' + idx + '].txt'" scope="global">
 					<template v-for="(link,i) in obj.links" v-slot:['link'+i]>
 						<a :href="$t('change_log[' + idx + '].links[' + i + '].url')" target="_blank">
@@ -986,6 +1000,8 @@
 					</template>
 				</i18n-t>
 			</div>
+		  </template>
+			<summary>... 続きを表示</summary>
 		</details>
 	</div>
 	
