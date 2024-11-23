@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>KanColle Sortie Simulator</title>
+	<title>KanColle Sortie Simulator R</title>
 	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 	<meta content="utf-8" http-equiv="encoding">
 
@@ -28,7 +28,7 @@
 <body style="display:none">
 	<div id="divMain">
 		<div id="divNavBar" :style="{'pointer-events':isDragging?'none':''}">
-			<div><span class="title" :title="$t('kancolle_sortie_simulator_sub')">KanColle Sortie Simulator</span></div>
+			<div><span class="title" :title="$t('kancolle_sortie_simulator_sub')">KanColle Sortie Simulator R</span></div>
 			<div id="divNavButtons">
 				<div @mouseover="showDropdownPlayer=true" @mouseout="showDropdownPlayer=false">
 					<div class="navButton" @click="onclickNavButton('divPlayerScroll')">{{$t('fleets')}}</div>
@@ -66,6 +66,10 @@
 		<div style="height:10px"></div>
 		
 		<div id="divPlayer">
+
+			<div style="margin:20px"><a href="https://kc3kai.github.io/kancolle-replay/simulator.html">本家様</a> を独自カスタマイズしたものです<br>
+				追加機能表示はすべて日本語のみです</div>
+
 			<div class="fleetSection">
 				<label><input type="radio" value="en" v-model="$i18n.locale" @change="onchangeLang"/>EN</label> <label><input type="radio" value="ja" v-model="$i18n.locale" @change="onchangeLang"/>JP</label>
 				&nbsp;&nbsp;&nbsp;&nbsp;
@@ -972,6 +976,7 @@
 	<div id="divOther">
 		<details>
 			<summary><span class="header">{{$t('change_log_header')}}:</span></summary>
+			<div>★は独自カスタマイズ内容</div>
 			<div v-for="(obj,idx) in $i18n.messages[$i18n.locale].change_log">
 				{{obj.date}} - <i18n-t :keypath="'change_log[' + idx + '].txt'" scope="global">
 					<template v-for="(link,i) in obj.links" v-slot:['link'+i]>
