@@ -1,4 +1,6 @@
 function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BAPI,noupdate,friendFleet) {
+	ACTIONS = 0;
+	const phaseDeads = new Array(Object.keys(PHASES).length).fill(0);
 	var ships1 = F1.ships, ships2 = F2.ships, ships1C = F1C.ships;
 	var alive1 = [], alive1C = [], alive2 = [], subsalive1 = [], subsalive1C = [], subsalive2 = [];
 	var hasInstall1 = false, hasInstall2 = false, hasInstall1C = false;
@@ -65,6 +67,8 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 		if (ships2[i].enableSecondShelling) doShell2 = true;
 	}
 	
+  let enemyAlives = alive2.length+subsalive2.length, currentEnemyAlives, enemyDeads;
+
 	//jet lbas
 	if (LBASwaves && LBASwaves.length && !NBonly && alive1.length+subsalive1.length > 0 && alive2.length+subsalive2.length > 0) {
 		if (C) BAPI.data.api_air_base_injection = {api_plane_from:[[-1],[-1]],api_stage1:null,api_stage2:null,api_stage3:null};
@@ -86,6 +90,11 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 		}
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.LBAS] += enemyDeads;
+	
 	//jet airstrike
 	if (!NBonly && !bombing && alive1.length+subsalive1.length > 0 && alive2.length+subsalive2.length > 0) {
 		if (C) BAPI.data.api_injection_kouku = {api_plane_from:[[-1],[-1]],api_stage1:null,api_stage2:null,api_stage3:null,api_stage3_combined:null};
@@ -105,6 +114,11 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 			if (alive2[i].HP <= 0) { alive2.splice(i,1); i--; }
 		}
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.AIR] += enemyDeads;
 	
 	//lbas
 	if (LBASwaves && LBASwaves.length && !NBonly) {
@@ -126,6 +140,11 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 		}
 		F2.AS = 0;
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.LBAS] += enemyDeads;
 	
 	//friend fleet air
 	if (!NBonly && friendFleet && friendFleet.air && alive2.length+subsalive2.length > 0) {
@@ -185,6 +204,11 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 		}
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.AIR] += enemyDeads;
+	
 	//support phase
 	if (Fsupport && (!NBonly || (MECHANICS.LBASBuff && Fsupport.supportType != 1)) && !aironly && alive1.length+subsalive1.length > 0 && alive2.length+subsalive2.length > 0) {
 		var chance = Fsupport.supportChance(Fsupport.supportBoss);
@@ -193,6 +217,11 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 			removeSunk(alive2); removeSunk(subsalive2);
 		}
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.SUPPORT] += enemyDeads;
 	
 	//opening asw
 	if (MECHANICS.OASW && !NBonly && !aironly && alive1C.length+subsalive1C.length > 0 && alive2.length+subsalive2.length > 0) {
@@ -212,11 +241,21 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 		}
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.ASW] += enemyDeads;
+	
 	// opening torpedo
 	if (!NBonly && !aironly && alive1C.length+subsalive1C.length > 0 && alive2.length+subsalive2.length > 0) {
 		if (C) BAPI.data.api_opening_atack = {api_edam:[-1,0,0,0,0,0,0],api_erai:[-1,0,0,0,0,0,0],api_eydam:[-1,0,0,0,0,0,0],api_fdam:[-1,0,0,0,0,0,0],api_frai:[-1,0,0,0,0,0,0],api_fydam:[-1,0,0,0,0,0,0],api_ecl:[-1,0,0,0,0,0,0],api_fcl:[-1,0,0,0,0,0,0]};
 		torpedoPhase(alive1C,subsalive1C,alive2,subsalive2,true,(C)? BAPI.data.api_opening_atack : undefined);
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.OPENING_TORPEDO] += enemyDeads;
 	
 	//shelling functions
 	var shellRange = function(escort1,api_hou) {
@@ -280,11 +319,21 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 		}
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.SHELL1] += enemyDeads;
+	
 	// closing torpedo for CTF/TTF
 	if (type!=2 && !NBonly && !aironly && alive1C.length+subsalive1C.length > 0 && alive2.length+subsalive2.length > 0) {
 		if (C) BAPI.data.api_raigeki = {api_edam:[-1,0,0,0,0,0,0],api_erai:[-1,0,0,0,0,0,0],api_eydam:[-1,0,0,0,0,0,0],api_fdam:[-1,0,0,0,0,0,0],api_frai:[-1,0,0,0,0,0,0],api_fydam:[-1,0,0,0,0,0,0],api_ecl:[-1,0,0,0,0,0,0],api_fcl:[-1,0,0,0,0,0,0]};
 		torpedoPhase(alive1C,subsalive1C,alive2,subsalive2,false,(C)? BAPI.data.api_raigeki:undefined);
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.CLOSING_TORPEDO] += enemyDeads;
 	
 	//shelling 2
 	if (!NBonly) {
@@ -297,6 +346,11 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 			shellRange(false,(C)? BAPI.data.api_hougeki2 : undefined);
 		}
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.SHELL2] += enemyDeads;
 	
 	//shelling 3
 	if (!NBonly) {
@@ -312,11 +366,21 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 		}
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.SHELL3] += enemyDeads;
+
 	// closing torpedo for STF
 	if (type==2 && !NBonly && !aironly && alive1C.length+subsalive1C.length > 0 && alive2.length+subsalive2.length > 0) {
 		if (C) BAPI.data.api_raigeki = {api_edam:[-1,0,0,0,0,0,0],api_erai:[-1,0,0,0,0,0,0],api_eydam:[-1,0,0,0,0,0,0],api_fdam:[-1,0,0,0,0,0,0],api_frai:[-1,0,0,0,0,0,0],api_fydam:[-1,0,0,0,0,0,0],api_ecl:[-1,0,0,0,0,0,0],api_fcl:[-1,0,0,0,0,0,0]};
 		torpedoPhase(alive1C,subsalive1C,alive2,subsalive2,false,(C)? BAPI.data.api_raigeki:undefined);
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.CLOSING_TORPEDO] += enemyDeads;
 	
 	var results = {};
 	if (noupdate) {
@@ -385,6 +449,11 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 			}
 		}
 		nightPhase(order1,order2,alive1C,subsalive1C,alive2,subsalive2,NBonly,(C)? BAPI.yasen:undefined);
+		
+		currentEnemyAlives = alive2.length+subsalive2.length;
+		enemyDeads = enemyAlives - currentEnemyAlives;
+		enemyAlives = currentEnemyAlives;
+		phaseDeads[PHASES.NB] += enemyDeads;
 	}
 	
 	//results
@@ -448,6 +517,9 @@ function simCombined(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombi
 		updateMorale(ships1,results.rank,((didNB)? 0 : results.MVP),NBonly,didNB);
 		updateMorale(ships1C,results.rank,results.MVPC,NBonly,didNB);
 	}
+
+	results.phaseDeads = phaseDeads
+	results.actions = ACTIONS;
 	
 	return results;
 }
@@ -693,6 +765,8 @@ function isNBFightEscort(ships2,ships2C) {
 
 function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BAPI,noupdate,friendFleet,fixEngagement) {
 	ACTIONS = 0;
+	const phaseDeads = new Array(Object.keys(PHASES).length).fill(0);
+
 	var F2C = F2.combinedWith;
 	var ships1 = F1.ships, ships2 = F2.ships, ships2C = F2C.ships;
 	var alive1 = [], alive2 = [], alive2C = [], subsalive1 = [], subsalive2 = [], subsalive2C = [];
@@ -766,6 +840,8 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 		if (ships2C[i].enableSecondShelling) doShell2 = true;
 	}
 	
+  let enemyAlives = alive2.length+subsalive2.length, currentEnemyAlives, enemyDeads;
+
 	//jet lbas
 	if (LBASwaves && LBASwaves.length && !NBonly && alive1.length+subsalive1.length > 0 && alive2.length+subsalive2.length+alive2C.length+subsalive2C.length > 0) {
 		if (C) BAPI.data.api_air_base_injection = {api_plane_from:[[-1],[-1]],api_stage1:null,api_stage2:null,api_stage3:null};
@@ -788,6 +864,11 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 		}
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.LBAS] += enemyDeads;
+	
 	//jet airstrike
 	if (!NBonly && !bombing && alive1.length+subsalive1.length > 0 && alive2.length+subsalive2.length+alive2C.length+subsalive2C.length > 0) {
 		if (C) BAPI.data.api_injection_kouku = {api_plane_from:[[-1],[-1]],api_stage1:null,api_stage2:null,api_stage3:null,api_stage3_combined:null};
@@ -802,6 +883,11 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 		removeSunk(alive2C);
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.AIR] += enemyDeads;
+
 	//lbas
 	if (LBASwaves && LBASwaves.length && !NBonly) {
 		if (C) BAPI.data.api_air_base_attack = [];
@@ -824,6 +910,11 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 		F2.AS = F2C.AS = 0;
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.LBAS] += enemyDeads;
+
 	//friend fleet air
 	if (!NBonly && friendFleet && friendFleet.air && alive2.length+subsalive2.length+alive2C.length+subsalive2C.length > 0) {
 		if (C) {
@@ -875,6 +966,12 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 		removeSunk(alive2C);
 	}
 	
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.AIR] += enemyDeads;
+
 	//support phase
 	if (Fsupport && !NBonly && !aironly && alive1.length+subsalive1.length > 0 && alive2.length+subsalive2.length+alive2C.length+subsalive2C.length > 0) {
 		var chance = Fsupport.supportChance(Fsupport.supportBoss);
@@ -885,6 +982,11 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 		}
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.SUPPORT] += enemyDeads;
+
 	//opening asw
 	if (MECHANICS.OASW && !NBonly && !aironly && alive1.length+subsalive1.length > 0 && alive2.length+subsalive2.length+alive2C.length+subsalive2C.length > 0) {
 		var attackers1 = [], order1 = [], attackers2 = [], order2 = [];
@@ -908,6 +1010,11 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 		removeSunk(subsalive2); removeSunk(subsalive2C);
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.ASW] += enemyDeads;
+
 	// opening torpedo
 	if (!NBonly && !aironly && alive1.length+subsalive1.length > 0 && (alive2.length+subsalive2.length > 0 || alive2C.length+subsalive2C.length > 0)) {
 		if (C) BAPI.data.api_opening_atack = {api_edam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_erai:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_eydam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fdam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_frai:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fydam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_ecl:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fcl:[-1,0,0,0,0,0,0,0,0,0,0,0,0]};
@@ -916,6 +1023,11 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 		removeSunk(alive2C); removeSunk(subsalive2C);
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.OPENING_TORPEDO] += enemyDeads;
+
 	//recalculate fLoS before shelling because recon may have been shot down
 	F1.clearFleetLoS();
 	F2.clearFleetLoS();
@@ -939,6 +1051,11 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 		shellPhase(order1,order2,alive1,subsalive1,alive2C,subsalive2C,(C)? BAPI.data.api_hougeki1:undefined);
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.SHELL1] += enemyDeads;
+
 	//closing torpedo
 	let didTorpedo = false;
 	if (!NBonly && !aironly && alive1.length+subsalive1.length > 0 && (alive2.length+subsalive2.length > 0 || alive2C.length+subsalive2C.length > 0)) {
@@ -949,6 +1066,11 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 		removeSunk(alive2C); removeSunk(subsalive2C);
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.CLOSING_TORPEDO] += enemyDeads;
+	
 	//shelling 2
 	if (!NBonly && !aironly && alive1.length+subsalive1.length > 0 && alive2.length+subsalive2.length > 0) {
 		var order1 = [], order2 = [];
@@ -958,6 +1080,11 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 		if (C) BAPI.data.api_hougeki2 = {api_at_eflag:[-1],api_at_list:[-1],api_at_type:[-1],api_damage:[-1],api_df_list:[-1],api_cl_list:[-1]};
 		shellPhase(order1,order2,alive1,subsalive1,alive2,subsalive2,(C)? BAPI.data.api_hougeki2:undefined);
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.SHELL2] += enemyDeads;
 	
 	//shelling 3
 	if (doShell2 && !NBonly && !aironly && alive1.length+subsalive1.length > 0 && (alive2.length+subsalive2.length > 0 || alive2C.length+subsalive2C.length > 0)) {
@@ -980,6 +1107,11 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 		removeSunk(alive2); removeSunk(subsalive2);
 		removeSunk(alive2C); removeSunk(subsalive2C);
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.SHELL3] += enemyDeads;
 	
 	var results = {};
 	results.didTorpedo = didTorpedo;
@@ -1051,6 +1183,11 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 		}
 		if (fightescort) nightPhase(order1,order2,alive1,subsalive1,alive2C,subsalive2C,NBonly,(C)? BAPI.yasen:undefined);
 		else nightPhase(order1,order2,alive1,subsalive1,alive2,subsalive2,NBonly,(C)? BAPI.yasen:undefined);
+		
+		currentEnemyAlives = alive2.length+subsalive2.length;
+		enemyDeads = enemyAlives - currentEnemyAlives;
+		enemyAlives = currentEnemyAlives;
+		phaseDeads[PHASES.NB] += enemyDeads;
 	}
 	
 	//results
@@ -1096,6 +1233,7 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 	}
 
 	results.actions = ACTIONS;
+	results.phaseDeads = phaseDeads;
 	
 	return results;
 }
@@ -1103,6 +1241,8 @@ function sim6vs12(F1,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BA
 //------------------
 function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing,noammo,BAPI,noupdate,friendFleet) {
 	ACTIONS = 0;
+	const phaseDeads = new Array(Object.keys(PHASES).length).fill(0);
+	
 	var F2C = F2.combinedWith;
 	var ships1 = F1.ships, ships2 = F2.ships, ships1C = F1C.ships, ships2C = F2C.ships;
 	var alive1 = [], alive1C = [], alive2 = [], alive2C = [], subsalive1 = [], subsalive1C = [], subsalive2 = [], subsalive2C = [];
@@ -1179,6 +1319,8 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		if (ships2C[i].enableSecondShelling) doShell2 = true;
 	}
 	
+  let enemyAlives = alive2.length+subsalive2.length, currentEnemyAlives, enemyDeads;
+
 	//jet lbas
 	if (LBASwaves && LBASwaves.length && !NBonly && alive1.length+subsalive1.length > 0 && alive2.length+subsalive2.length+alive2C.length+subsalive2C.length > 0) {
 		if (C) BAPI.data.api_air_base_injection = {api_plane_from:[[-1],[-1]],api_stage1:null,api_stage2:null,api_stage3:null};
@@ -1201,6 +1343,11 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		}
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.LBAS] += enemyDeads;
+
 	//jet airstrike
 	if (!NBonly && !bombing && alive1.length+subsalive1.length+alive2C.length+subsalive1C.length > 0 && alive2.length+subsalive2.length+alive2C.length+subsalive2C.length > 0) {
 		if (C) BAPI.data.api_injection_kouku = {api_plane_from:[[-1],[-1]],api_stage1:null,api_stage2:null,api_stage3:null,api_stage3_combined:null};
@@ -1213,6 +1360,11 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		removeSunk(alive1); removeSunk(alive1C);
 		removeSunk(alive2); removeSunk(alive2C);
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.AIR] += enemyDeads;
 	
 	//lbas
 	if (LBASwaves && LBASwaves.length && !NBonly) {
@@ -1235,6 +1387,11 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		}
 		F2.AS = F2C.AS = 0;
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.LBAS] += enemyDeads;
 	
 	//friend fleet air
 	if (!NBonly && friendFleet && friendFleet.air && alive2.length+subsalive2.length+alive2C.length+subsalive2C.length > 0) {
@@ -1285,6 +1442,11 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		removeSunk(alive2); removeSunk(alive2C);
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.AIR] += enemyDeads;
+	
 	//support phase
 	if (Fsupport && !NBonly && !aironly && alive1.length+subsalive1.length+alive1C.length+subsalive1C.length > 0 && alive2.length+subsalive2.length+alive2C.length+subsalive2C.length > 0) {
 		var chance = Fsupport.supportChance(Fsupport.supportBoss);
@@ -1294,6 +1456,11 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		removeSunk(alive2); removeSunk(alive2C);
 		removeSunk(subsalive2); removeSunk(subsalive2C);
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.SUPPORT] += enemyDeads;
 	
 	//opening asw
 	if (MECHANICS.OASW && !NBonly && !aironly && alive1.length+subsalive1.length+alive1C.length+subsalive1C.length > 0 && alive2.length+subsalive2.length+alive2C.length+subsalive2C.length > 0) {
@@ -1318,6 +1485,11 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		removeSunk(subsalive2); removeSunk(subsalive2C);
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.ASW] += enemyDeads;
+	
 	// opening torpedo
 	if (!NBonly && !aironly && alive1.length+subsalive1.length+alive1C.length+subsalive1C.length > 0 && alive2.length+subsalive2.length+alive2C.length+subsalive2C.length > 0) {
 		if (C) BAPI.data.api_opening_atack = {api_edam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_erai:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_eydam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fdam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_frai:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fydam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_ecl:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fcl:[-1,0,0,0,0,0,0,0,0,0,0,0,0]};
@@ -1327,6 +1499,11 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		removeSunk(alive2); removeSunk(alive2C);
 		removeSunk(subsalive2); removeSunk(subsalive2C);
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.OPENING_TORPEDO] += enemyDeads;
 	
 	//shelling functions
 	var shellRange = function(d1,d2,api_hou) {
@@ -1400,6 +1577,11 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		removeSunk(subsalive2); removeSunk(subsalive2C);
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.SHELL1] += enemyDeads;
+	
 	//shelling 2
 	var d1A = {ships1f: ships1, alive1f: alive1, subsalive1f: subsalive1, alive1fC: alive1C, subsalive1fC: subsalive1C, hasInstall1f: hasInstall1||hasInstall1C};
 	var d2A = {ships2f: ships2, alive2f: alive2, subsalive2f: subsalive2, alive2fC: alive2C, subsalive2fC: subsalive2C, hasInstall2f: hasInstall2||hasInstall2C};
@@ -1416,6 +1598,11 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		removeSunk(subsalive2); removeSunk(subsalive2C);
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.SHELL2] += enemyDeads;
+	
 	// closing torpedo for CTF/TTF
 	if (type!=2 && !NBonly && !aironly && alive1.length+subsalive1.length+alive1C.length+subsalive1C.length > 0 && alive2.length+subsalive2.length+alive2C.length+subsalive2C.length > 0) {
 		if (C) BAPI.data.api_raigeki = {api_edam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_erai:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_eydam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fdam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_frai:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fydam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_ecl:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fcl:[-1,0,0,0,0,0,0,0,0,0,0,0,0]};
@@ -1425,6 +1612,11 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		removeSunk(alive2); removeSunk(alive2C);
 		removeSunk(subsalive2); removeSunk(subsalive2C);
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.CLOSING_TORPEDO] += enemyDeads;
 	
 	//shelling 3
 	var d1A = {ships1f: ships1, alive1f: alive1, subsalive1f: subsalive1, alive1fC: alive1C, subsalive1fC: subsalive1C, hasInstall1f: hasInstall1||hasInstall1C};
@@ -1442,6 +1634,11 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		removeSunk(subsalive2); removeSunk(subsalive2C);
 	}
 	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.SHELL3] += enemyDeads;
+	
 	// closing torpedo for STF
 	if (type==2 && !NBonly && !aironly && alive1.length+subsalive1.length+alive1C.length+subsalive1C.length > 0 && alive2.length+subsalive2.length+alive2C.length+subsalive2C.length > 0) {
 		if (C) BAPI.data.api_raigeki = {api_edam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_erai:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_eydam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fdam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_frai:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fydam:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_ecl:[-1,0,0,0,0,0,0,0,0,0,0,0,0],api_fcl:[-1,0,0,0,0,0,0,0,0,0,0,0,0]};
@@ -1451,6 +1648,11 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		removeSunk(alive2); removeSunk(alive2C);
 		removeSunk(subsalive2); removeSunk(subsalive2C);
 	}
+	
+  currentEnemyAlives = alive2.length+subsalive2.length;
+	enemyDeads = enemyAlives - currentEnemyAlives;
+	enemyAlives = currentEnemyAlives;
+	phaseDeads[PHASES.CLOSING_TORPEDO] += enemyDeads;
 	
 	var results = {};
 	if (noupdate) {
@@ -1526,6 +1728,11 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 		}
 		if (fightescort) nightPhase(order1,order2,alive1C,subsalive1C,alive2C,subsalive2C,NBonly,(C)? BAPI.yasen:undefined);
 		else nightPhase(order1,order2,alive1C,subsalive1C,alive2,subsalive2,NBonly,(C)? BAPI.yasen:undefined);
+	
+		currentEnemyAlives = alive2.length+subsalive2.length;
+		enemyDeads = enemyAlives - currentEnemyAlives;
+		enemyAlives = currentEnemyAlives;
+		phaseDeads[PHASES.NB] += enemyDeads;
 	}
 	
 	//results
@@ -1591,6 +1798,7 @@ function sim12vs12(type,F1,F1C,F2,Fsupport,LBASwaves,doNB,NBonly,aironly,bombing
 	}
 	
 	results.actions = ACTIONS;
-	
+	results.phaseDeads = phaseDeads;
+
 	return results;
 }
