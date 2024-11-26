@@ -1,24 +1,35 @@
-- name: Debug Information
-  run: |
-    echo "Git version:"
-    git --version
-    echo "---"
-    echo "Remote information:"
-    git remote -v
-    echo "---"
-    echo "Branch information:"
-    git branch -a
-    echo "---"
-    echo "Status:"
-    git status
-    echo "---"
-    echo "Upstream master log:"
-    git log upstream/master -n 3
-    echo "---"
-    echo "Local master log:"
-    git log main -n 3
-
-- name: Merge Upstream into Fork
-  run: |
-    git checkout main
-    git merge upstream/master --no-ff -v
+name: Debug Update Fork
+on: [workflow_dispatch]  # 手動実行可能に
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Detailed Debug
+        run: |
+          echo "Git Configuration:"
+          git config --list
+          
+          echo -e "\n=== Remote Information ==="
+          git remote -v
+          
+          echo -e "\n=== Branch Information ==="
+          git branch -a
+          
+          echo -e "\n=== Log of main branch ==="
+          git log main -n 5
+          
+          echo -e "\n=== Log of upstream/master ==="
+          git log upstream/master -n 5
+          
+          echo -e "\n=== Merge Test ==="
+          git fetch upstream
+          git checkout main
+          git merge --no-commit upstream/master || true
+          
+          echo -e "\n=== Merge Status ==="
+          git status
