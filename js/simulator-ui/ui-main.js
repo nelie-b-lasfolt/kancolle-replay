@@ -48,7 +48,7 @@ var MECHANICS_LIST = [
 	{ key: 'enable_AACIRework', name: 'AACI Rework (Sequential Roll + New Priority)' },
 ];
 
-window.PHASES = {LBAS:0, AIR:1, SUPPORT:2, ASW:3, OPENING_TORPEDO:4, SHELL1:5, SHELL2:6, CLOSING_TORPEDO:7,FRIEND:8,NB:9}
+window.PHASES = {LBAS:0, AIR:1, SUPPORT:2, ASW:3, OPENING_TORPEDO:4, SHELL1:5, SHELL2:6, SHELL3:7, CLOSING_TORPEDO:8,FRIEND:9,NB:10}
 
 
 var UI_MAIN = Vue.createApp({

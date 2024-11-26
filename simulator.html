@@ -588,8 +588,8 @@
 				
 			<div class="result-controls" v-show="results.active">
 
-				<button @click="removeResults" v-if="resultsTab[0] != 'l'" class="save-btn">表示中のタブを削除</button>
-				<button @click="saveResults" v-if="resultsTab == 'latest'" class="save-btn">結果を保存</button>
+				<button @click="saveResults" :disabled="resultsTab !== 'latest'">結果を保存</button>
+				<button @click="removeResults" v-if="resultsTab[0] != 'l'" style="margin-left: 10px">表示中のタブを削除</button>
 
 				<div class="tabs" v-if="lastResults || savedResults">
 					<button 
@@ -949,16 +949,9 @@
 					<div>フェーズごと撃沈数</div>
 					<table class="multi">
 						<tr><th>&nbsp;</th><th v-for="n in results.numNodes">{{n}}</th><th>合計</th></tr>
-						<tr v-if="results.totalPhaseDeads[0]!='0'"><th>基地    </th><td v-for="stat in results.phaseDeads">{{stat[0]}}</td><td>{{results.totalPhaseDeads[0]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[1]!='0'"><th>航空戦  </th><td v-for="stat in results.phaseDeads">{{stat[1]}}</td><td>{{results.totalPhaseDeads[1]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[2]!='0'"><th>支援    </th><td v-for="stat in results.phaseDeads">{{stat[2]}}</td><td>{{results.totalPhaseDeads[2]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[3]!='0'"><th>先制対潜</th><td v-for="stat in results.phaseDeads">{{stat[3]}}</td><td>{{results.totalPhaseDeads[3]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[4]!='0'"><th>先制雷撃</th><td v-for="stat in results.phaseDeads">{{stat[4]}}</td><td>{{results.totalPhaseDeads[4]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[5]!='0'"><th>砲撃戦１</th><td v-for="stat in results.phaseDeads">{{stat[5]}}</td><td>{{results.totalPhaseDeads[5]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[6]!='0'"><th>砲撃戦２</th><td v-for="stat in results.phaseDeads">{{stat[6]}}</td><td>{{results.totalPhaseDeads[6]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[7]!='0'"><th>閉幕雷撃</th><td v-for="stat in results.phaseDeads">{{stat[7]}}</td><td>{{results.totalPhaseDeads[7]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[8]!='0'"><th>友軍    </th><td v-for="stat in results.phaseDeads">{{stat[8]}}</td><td>{{results.totalPhaseDeads[8]}}</td></tr>
-						<tr v-if="results.totalPhaseDeads[9]!='0'"><th>夜戦    </th><td v-for="stat in results.phaseDeads">{{stat[9]}}</td><td>{{results.totalPhaseDeads[9]}}</td></tr>
+						<template v-for="p,i in ['基地','航空戦','支援','先制対潜','先制雷撃','砲撃戦１','砲撃戦２','砲撃戦３','閉幕雷撃','友軍','夜戦']">
+							<tr v-if="results.totalPhaseDeads[i]!='0'"><th>{{p}}</th><td v-for="stat in results.phaseDeads">{{stat[i]}}</td><td>{{results.totalPhaseDeads[i]}}</td></tr>
+						</template>
 					</table>
 				</div>
 			</div>
