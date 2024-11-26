@@ -2,7 +2,7 @@ name: Update Fork
 
 on:
   schedule:
-    - cron: "0 5 * * *"  # 毎日5時に実行
+    - cron: "0 20 * * *"  # 毎日JST5時に実行
 
 jobs:
   update-fork:
@@ -11,7 +11,13 @@ jobs:
       - name: Checkout Fork
         uses: actions/checkout@v3
         with:
-          persist-credentials: false  # 必須: GitHubトークンを自動で使用しないようにする
+          persist-credentials: false  # 必須: GitHubトークンを自動で使用しないようにするwith:
+          fetch-depth: 0  # 履歴を完全に取得
+
+      - name: Set Git Identity
+        run: |
+          git config user.email "github-actions@github.com"
+          git config user.name "GitHub Actions Bot"
 
       - name: Add Upstream
         run: git remote add upstream https://github.com/KC3Kai/kancolle-replay.git
@@ -22,7 +28,7 @@ jobs:
       - name: Merge Upstream into Fork
         run: |
           git checkout main
-          git merge upstream/master || exit 1  # マージ失敗時は終了
+          git merge upstream/master --allow-unrelated-histories || exit 1  # マージ失敗時は終了
 
       - name: Push Changes
         run: |
