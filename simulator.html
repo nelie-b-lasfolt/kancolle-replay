@@ -589,38 +589,23 @@
 			<div class="result-controls" v-show="results.active">
 
 				<button @click="saveResults" :disabled="resultsTab !== 'latest'">結果を保存</button>
-				<button @click="removeResults" v-if="resultsTab[0] != 'l'" style="margin-left: 10px">表示中のタブを削除</button>
-
+				
 				<div class="tabs" v-if="lastResults || savedResults">
-					<button 
-						v-if="lastResults || savedResults"
-						class="tab"
-						:class="{ active: resultsTab == 'latest' }"
-						@click="showLatest"
-					>
-						最新結果
-					</button>
-					<button 
-						v-if="lastResults"
-						class="tab"
-						:class="{ active: resultsTab == 'last' }"
-						@click="showLast"
-					>
-						前回結果
-					</button>
-					<button 
-					  v-for="(result, index) in savedResults"
-					  :key="index"
-					  class="tab"
-					  :class="{ active: resultsTab === index }"
-					  @click="showSaved(index)"
-				  >
-						<input v-if="resultsTab === index"
-							type="text"
-							v-model="result.name"
-						/>
-						<span v-else :title="result.name">{{result.name}}</span>{{}}
-					</button>
+					<div v-if="lastResults || savedResults" class="tab" :class="{ active: resultsTab == 'latest' }">
+					  <button class="tab-label" @click="showLatest">最新結果</button>
+					</div>
+					<div v-if="lastResults" class="tab" :class="{ active: resultsTab == 'last' }">
+					  <button class="tab-label" @click="showLast">前回結果</button>
+					</div>
+					<template v-for="(result, index) in savedResults">
+						<div :key="index" class="tab" :class="{ active: resultsTab == index }">
+							<input class="tab-label" v-if="resultsTab === index" type="text" v-model="result.name"/>
+							<button class="tab-label" @click="showSaved(index)" v-else>
+								<span :title="result.name">{{ result.name }}</span>
+							</button>
+							<button class="tab-close" @click="removeResults(index)">×</button>
+						</div>
+				  </template>
 				</div>
 				
 			</div>
