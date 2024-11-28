@@ -11,14 +11,15 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Sync and Merge Upstream
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config user.email "github-actions@github.com"
-          git config user.name "GitHub Actions Bot"
-          git remote add upstream https://github.com/KC3Kai/kancolle-replay.git
-          git fetch upstream
-          git checkout main
-          git merge upstream/master --allow-unrelated-histories || exit 1
-          git push origin main
+          - name: Sync and Merge Upstream
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            run: |
+              git config user.email "github-actions@github.com"
+              git config user.name "GitHub Actions Bot"
+              git remote add upstream https://github.com/KC3Kai/kancolle-replay.git
+              git fetch upstream
+              git checkout main
+              git merge upstream/master --allow-unrelated-histories || exit 1
+              git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" main
+
