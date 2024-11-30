@@ -3,6 +3,8 @@ on:
     - cron: "0 20 * * *"  # cronの書式を修正
 jobs:
   update-fork:
+    permissions:
+      contents: write  # この行を追加
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Fork
