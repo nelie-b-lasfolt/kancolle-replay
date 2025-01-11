@@ -656,19 +656,19 @@
 						</div>
 
 						<div v-if="settings.resultItems.actions">
-							<div><span class="tooltip" title="昼砲撃戦＋夜戦　敵味方の行動回数">平均行動数:</div>
+							<div><span class="tooltip" title="昼砲撃戦＋夜戦　敵味方の行動回数(出撃あたりではなく各ノードの合計)">平均行動数:</div>
 							<table>
 							<tr><th><img src="assets/stats/fp.png" :alt=""/></th><td>{{results.totalActions}}</td></tr>
 							</table>
 						</div>
 						<div v-if="settings.resultItems.phases">
-							<div><span class="tooltip" title="閉幕魚雷フェーズまでいった回数">平均雷撃回数:</span></div>
+							<div><span class="tooltip" title="閉幕魚雷フェーズまでいった回数(出撃あたりではなく各ノードの合計)">平均雷撃回数:</span></div>
 							<table>
 							<tr><th><img src="assets/stats/tp.png" :alt=""/></th><td>{{results.totalTorpedo}}</td></tr>
 							</table>
 						</div>
 						<div v-if="settings.resultItems.phases">
-							<div><span class="tooltip" title="夜戦に突入した回数">平均夜戦回数:</span></div>
+							<div><span class="tooltip" title="夜戦に突入した回数(出撃あたり)">平均夜戦回数:</span></div>
 							<table>
 							<tr><th><img src="assets/stats/yasen.png" :alt=""/></th><td>{{results.totalNBs}}</td></tr>
 							</table>
@@ -796,7 +796,6 @@
 							<tr><th><img src="assets/stats/bucket.png" :alt="$t('bucket')"/></th><td><span class="resultBold">{{results.bucketS}}</span></td></tr>
 							<tr v-show="results.damecon"><th><img src="assets/items/14.png" class="iconSlotitem" :alt="$t('repair_team')"/></th><td><span class="resultBold">{{results.dameconS}}</span></td></tr>
 							<tr v-show="results.underway"><th><img src="assets/items/35.png" class="iconSlotitem" :alt="$t('underway_resupply')"/></th><td><span class="resultBold">{{results.underwayS}}</span></td></tr>
-							<tr><th><img src="assets/stats/fp.png" :alt=""/></th><td><span class="resultBold">{{results.totalActionsS}}</span></td></tr>
 							</table>
 						</div>
 						<div v-if="settings.resultItems.cost && settings.resultItems.bossSunk">

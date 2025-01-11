@@ -558,6 +558,7 @@ var UI_MAIN = Vue.createApp({
 			this.results.transport = formatNum(resultSim.totalTransport / totalNum);
 			this.results.canAdvanceAfter = formatNum(resultSim.totalCanAdvanceAfter / totalNum);
 
+		  let totalActions = 0, totalTorpedo = 0;
 			for (let i=0; i<resultSim.nodes.length; i++) {
 				let node = resultSim.nodes[i];
 				this.results.nodeReached[i] = formatNum(node.num / totalNum);
@@ -593,6 +594,9 @@ var UI_MAIN = Vue.createApp({
 				this.results.actions[i] = formatNum(node.actions / totalNum);
 				this.results.torpedo[i] = formatNum(node.torpedo / totalNum);
 				this.results.phaseDeads[i] = node.phaseDeads.map(x => formatNum(x / totalNum));
+				
+				totalActions += this.results.actions[i];
+				totalTorpedo += this.results.torpedo[i];
 			}
 
 			this.results.fuelSupply = formatNum(resultSim.totalFuelS / totalNum);
@@ -603,8 +607,10 @@ var UI_MAIN = Vue.createApp({
 			this.results.bucket = formatNum(resultSim.totalBuckets / totalNum);
 			this.results.damecon = formatNum(resultSim.totalDamecon / totalNum);
 			this.results.underway = formatNum(resultSim.totalUnderway / totalNum);
-			this.results.totalActions = formatNum(resultSim.totalActions / totalNum);
-			this.results.totalTorpedo = formatNum(resultSim.totalTorpedo / totalNum);
+			this.results.totalActions = formatNum(totalActions);
+			this.results.totalTorpedo = formatNum(totalTorpedo);
+			// this.results.totalActions = formatNum(resultSim.totalActions / totalNum);
+			// this.results.totalTorpedo = formatNum(resultSim.totalTorpedo / totalNum);
 			this.results.totalNBs = formatNum(resultSim.totalNBs / totalNum);
 			
       const rateGetResource = RESOURCENODE < resultSim.nodes.length ? this.results.nodeReached[RESOURCENODE] : this.results.canAdvanceAfter;
@@ -617,7 +623,7 @@ var UI_MAIN = Vue.createApp({
 			this.results.bucketS = formatNum((resultSim.totalBuckets) / totalNum / rateS);
 			this.results.dameconS = formatNum((resultSim.totalDamecon) / totalNum / rateS);
 			this.results.underwayS = formatNum((resultSim.totalUnderway) / totalNum / rateS);
-			this.results.totalActionsS = formatNum(resultSim.totalActions / totalNum / rateS);
+			// this.results.totalActionsS = formatNum(resultSim.totalActions / totalNum / rateS);
 			
 			let rateA = (nodeLast.ranks.S + nodeLast.ranks.A) / totalNum;
 			this.results.fuelA = formatNum(((resultSim.totalFuelS + resultSim.totalFuelR) / totalNum - GETFUEL * rateGetResource) / rateA);
@@ -665,7 +671,7 @@ var UI_MAIN = Vue.createApp({
 			this.results.bucketSunk = formatNum((resultSim.totalBuckets) / totalNum / rateSunk);
 			this.results.dameconSunk = formatNum((resultSim.totalDamecon) / totalNum / rateSunk);
 			this.results.underwaySunk = formatNum((resultSim.totalUnderway) / totalNum / rateSunk);
-			this.results.actionsSunk = formatNum((resultSim.totalActions) / totalNum / rateSunk);
+			// this.results.actionsSunk = formatNum((resultSim.totalActions) / totalNum / rateSunk);
 			
 			this.results.totalPhaseDeads = resultSim.totalPhaseDeads.map(x => formatNum(x / totalNum));
 
