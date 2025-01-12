@@ -1017,7 +1017,7 @@ ${t('results.buckets')}:	${this.resultsBucketTPPer}`;
 					const replaced_url = linkElement.href.replace('kc3kai', 'color-ribbon');
 					// 元の URL にリダイレクト
 					window.location.href = replaced_url;
-
+					window.location.reload();
 				} else {
 					this.loadURLNotice = 'URLの展開に失敗しました';
 					console.log(`URLの展開に失敗しました`);
