@@ -232,8 +232,9 @@ var UI_MAIN = Vue.createApp({
 			fuelHP: 0, ammoHP: 0, steelHP: 0, bauxHP: 0, bucketHP: 0, dameconHP: 0, underwayHP: 0,
 			fuelTP: 0, ammoTP: 0, steelTP: 0, bauxTP: 0, bucketTP: 0, dameconTP: 0, underwayTP: 0,
 			perHPRes: 1, perTPRes: 1,
-			totalActions: 0, totalActionsS: 0, actions: [],
-			totalTorpedo: 0, torpedo: [], totalNBs: 0,
+			totalActions: 0, actions: [],
+			totalTorpedo: 0, torpedo: [], 
+			totalNBs: 0, NBs: [],
 			phaseDeads: [],
 			totalPhaseDeads: [],
 		},
@@ -253,7 +254,10 @@ var UI_MAIN = Vue.createApp({
 		latestResults: null,
 		lastResults:  null,
 		savedResults:  [],
-		resultsTab: 'latest'
+		resultsTab: 'latest',
+
+		tinyURL: '',
+		loadURLNotice: ''
 		
 	}),
 	mounted: function() {
@@ -558,7 +562,7 @@ var UI_MAIN = Vue.createApp({
 			this.results.transport = formatNum(resultSim.totalTransport / totalNum);
 			this.results.canAdvanceAfter = formatNum(resultSim.totalCanAdvanceAfter / totalNum);
 
-		  let totalActions = 0, totalTorpedo = 0;
+		  let totalActions = 0, totalTorpedo = 0, totalNBs = 0;
 			for (let i=0; i<resultSim.nodes.length; i++) {
 				let node = resultSim.nodes[i];
 				this.results.nodeReached[i] = formatNum(node.num / totalNum);
@@ -591,12 +595,14 @@ var UI_MAIN = Vue.createApp({
 				this.results.airAP[i] = formatNum(node.airStates[2] / node.num);
 				this.results.airAS[i] = formatNum(node.airStates[3] / node.num);
 				this.results.airASP[i] = formatNum(node.airStates[4] / node.num);
-				this.results.actions[i] = formatNum(node.actions / totalNum);
-				this.results.torpedo[i] = formatNum(node.torpedo / totalNum);
+				this.results.actions[i] = formatNum(node.actions / node.num);
+				this.results.torpedo[i] = formatNum(node.torpedo / node.num);
+				this.results.NBs[i] = formatNum(node.NBs / node.num);
 				this.results.phaseDeads[i] = node.phaseDeads.map(x => formatNum(x / totalNum));
 				
 				totalActions += this.results.actions[i];
 				totalTorpedo += this.results.torpedo[i];
+				totalNBs += this.results.NBs[i];
 			}
 
 			this.results.fuelSupply = formatNum(resultSim.totalFuelS / totalNum);
@@ -609,9 +615,7 @@ var UI_MAIN = Vue.createApp({
 			this.results.underway = formatNum(resultSim.totalUnderway / totalNum);
 			this.results.totalActions = formatNum(totalActions);
 			this.results.totalTorpedo = formatNum(totalTorpedo);
-			// this.results.totalActions = formatNum(resultSim.totalActions / totalNum);
-			// this.results.totalTorpedo = formatNum(resultSim.totalTorpedo / totalNum);
-			this.results.totalNBs = formatNum(resultSim.totalNBs / totalNum);
+			this.results.totalNBs = formatNum(totalNBs);
 			
       const rateGetResource = RESOURCENODE < resultSim.nodes.length ? this.results.nodeReached[RESOURCENODE] : this.results.canAdvanceAfter;
 
@@ -623,7 +627,6 @@ var UI_MAIN = Vue.createApp({
 			this.results.bucketS = formatNum((resultSim.totalBuckets) / totalNum / rateS);
 			this.results.dameconS = formatNum((resultSim.totalDamecon) / totalNum / rateS);
 			this.results.underwayS = formatNum((resultSim.totalUnderway) / totalNum / rateS);
-			// this.results.totalActionsS = formatNum(resultSim.totalActions / totalNum / rateS);
 			
 			let rateA = (nodeLast.ranks.S + nodeLast.ranks.A) / totalNum;
 			this.results.fuelA = formatNum(((resultSim.totalFuelS + resultSim.totalFuelR) / totalNum - GETFUEL * rateGetResource) / rateA);
@@ -671,7 +674,6 @@ var UI_MAIN = Vue.createApp({
 			this.results.bucketSunk = formatNum((resultSim.totalBuckets) / totalNum / rateSunk);
 			this.results.dameconSunk = formatNum((resultSim.totalDamecon) / totalNum / rateSunk);
 			this.results.underwaySunk = formatNum((resultSim.totalUnderway) / totalNum / rateSunk);
-			// this.results.actionsSunk = formatNum((resultSim.totalActions) / totalNum / rateSunk);
 			
 			this.results.totalPhaseDeads = resultSim.totalPhaseDeads.map(x => formatNum(x / totalNum));
 
@@ -970,6 +972,62 @@ ${t('results.buckets')}:	${this.resultsBucketTPPer}`;
 		
 		onclickBackup: function() {
 			UI_BACKUP.doOpen();
+		},
+		
+		onclickLoadURL: async function() {
+			console.log(this.tinyURL);
+			const prefix = 'https://tinyurl.com/';
+
+			if(!this.tinyURL.startsWith(prefix)) {
+				this.loadURLNotice = `URL が ${prefix} 形式ではありません`;
+				console.log(`URL が ${prefix} 形式ではありません`);
+				return;
+			}
+			try {
+				// API 呼び出し (GET)
+				const response = await fetch(this.tinyURL);
+				
+				if (!response.ok) {
+					this.loadURLNotice = `短縮 URL が正しくありません`;
+					console.log(`短縮 URL が正しくありません`);
+					return;
+				}
+		
+				// レスポンスのテキストを取得
+				const htmlText = await response.text();
+
+				// DOMParser を使って HTML をパース
+				const parser = new DOMParser();
+				const doc = parser.parseFromString(htmlText, 'text/html');
+
+				// <a id="long-link"> タグを取得
+				const linkElement = doc.querySelector('#long-link');
+
+				if (linkElement && linkElement.href) {
+					// href 属性を取得
+					console.log('Extracted URL:', linkElement.href);
+					const kc3kai_prefix = 'https://kc3kai.github.io/kancolle-replay/simulator.html#backup=';
+					
+					if(!linkElement.href.startsWith(kc3kai_prefix)) {
+						this.loadURLNotice = `URL が ${kc3kai_prefix} 形式ではありません`;
+						console.log(`URL が ${kc3kai_prefix} 形式ではありません`);
+						return;
+					}
+
+					const replaced_url = linkElement.href.replace('kc3kai', 'color-ribbon');
+					// 元の URL にリダイレクト
+					window.location.href = replaced_url;
+
+				} else {
+					this.loadURLNotice = 'URLの展開に失敗しました';
+					console.log(`URLの展開に失敗しました`);
+					return;
+				}
+		
+			} catch (error) {
+				this.loadURLNotice = 'URLの展開に失敗しました: ' + error;
+				console.log(`URLの展開に失敗しました` + error);
+			}
 		},
 		
 		initSimImport: function(dataInput) {

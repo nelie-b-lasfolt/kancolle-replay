@@ -104,9 +104,6 @@ var SIM = {
 			totalFCFUsed: 0,
 			totalUnderway: 0,
 			totalCanAdvanceAfter: 0,
-			totalActions: 0,
-			totalTorpedo: 0,
-			totalNBs: 0,
 			totalPhaseDeads: new Array(Object.keys(PHASES).length).fill(0),
 			nodes: [],
 		};
@@ -132,6 +129,7 @@ var SIM = {
 				airStates: [0,0,0,0,0],
 				actions: 0,
 				torpedo: 0,
+				NBs: 0,
 				phaseDeads: new Array(Object.keys(PHASES).length).fill(0),
 			});
 		}
@@ -198,12 +196,8 @@ var SIM = {
 			if (sunkFAny) rNode.sunkFAny++;
 		}
 		rNode.actions += resultSim.actions;
-		this._results.totalActions += resultSim.actions;
-		if(resultSim.didTorpedo) {
-			this._results.totalTorpedo++;
-		  rNode.torpedo++;
-		}
-		if(resultSim.didNB) this._results.totalNBs++;
+		if(resultSim.didTorpedo) rNode.torpedo++;
+		if(resultSim.didNB) rNode.NBs++;
 		for(let i = 0; i < resultSim.phaseDeads.length; i++) {
 		  rNode.phaseDeads[i] += resultSim.phaseDeads[i];
 			this._results.totalPhaseDeads[i] += resultSim.phaseDeads[i];

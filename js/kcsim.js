@@ -4222,9 +4222,6 @@ function simStats(numsims,foptions) {
 		totalEmptiedPlanes: 0,
 		totalEmptiedLBAS: 0,
 		totalGaugeDamage: 0,
-		totalActions: 0,
-		totalTorpedo: 0,
-		totalNBs: 0,
 		nodes: []
 	};
 	for (var i=0; i<FLEETS2.length; i++) {
@@ -4241,6 +4238,7 @@ function simStats(numsims,foptions) {
 			airStates: [0,0,0,0,0],
 			actions: 0,
 			torpedo: 0,
+			NBs: 0,
 			phaseDeads: [],
 		});
 	}
@@ -4298,20 +4296,14 @@ function simStats(numsims,foptions) {
 			if (FLEETS2[j].combinedWith) res = sim6vs12(FLEETS1[0],FLEETS2[j],FLEETS1S[supportNum],LBASwaves,options.NB,options.NBonly,options.aironly,options.landbomb,options.noammo,null,false,friendFleet,options.fixEngagement);
 			else res = sim(FLEETS1[0],FLEETS2[j],FLEETS1S[supportNum],LBASwaves,options.NB,options.NBonly,options.aironly,options.landbomb,options.noammo,null,false,friendFleet,options.fixEngagement);
 			totalResult.nodes[j].num++;
-			if (res.didNB) totalResult.totalNBs++;
 			if (res.redded) totalResult.nodes[j].redded++;
 			for (var k=0; k<res.reddedIndiv.length; k++) if (res.reddedIndiv[k]) totalResult.nodes[j].redIndiv[k]++;
 			for (var k=0; k<res.orangedIndiv.length; k++) if (res.orangedIndiv[k]) totalResult.nodes[j].orangeIndiv[k]++;
 			if (res.undamaged) totalResult.nodes[j].undamaged++;
 			if (res.flagsunk) totalResult.nodes[j].flagsunk++;
-			if (res.actions) {
-				totalResult.nodes[j].actions += res.actions;
-				totalResult.totalActions += res.actions;
-			}
-			if (res.didTorpedo) {
-				totalResult.nodes[j].torpedo++;
-				totalResult.totalTorpedo++;
-			}
+			if (res.actions) totalResult.nodes[j].actions += res.actions;
+			if (res.didTorpedo) totalResult.nodes[j].torpedo++;
+			if (res.didNB) totalResult.nodes[j].NBs++;
 			totalResult.nodes[j].ranks[res.rank]++;
 			totalResult.nodes[j].MVPs[res.MVP]++;
 			totalResult.nodes[j].airStates[FLEETS1[0].AS+2]++;

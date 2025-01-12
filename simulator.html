@@ -76,6 +76,11 @@
 				<input type="button" :value="$t('save_load_simulator_backup')" @click="onclickBackup"/>&nbsp;
 				<input type="button" :value="$t('import_export_deckbuilder_format')" @click="onclickDeckbuilder"/>&nbsp;
 			</div>
+			<div>
+				<label>本家共有URL：</label><input type="text" placeholder="https://tinyurl.com/..." v-model="tinyURL" />
+				<button @click="onclickLoadURL">展開する</button>
+				<div v-if="loadURLNotice">{{loadURLNotice}}</div>
+			</div>
 			<h2>{{$t('fleets')}}</h2>
 			<div class="fleetSection">
 				<div class="scrollAnchor"><div ref="divPlayerMainScroll"></div></div>
@@ -668,7 +673,7 @@
 							</table>
 						</div>
 						<div v-if="settings.resultItems.phases">
-							<div><span class="tooltip" title="夜戦に突入した回数(出撃あたり)">平均夜戦回数:</span></div>
+							<div><span class="tooltip" title="夜戦に突入した回数(出撃あたりではなく各ノードの合計)">平均夜戦回数:</span></div>
 							<table>
 							<tr><th><img src="assets/stats/yasen.png" :alt=""/></th><td>{{results.totalNBs}}</td></tr>
 							</table>
@@ -814,8 +819,7 @@
 							<tr><th><img src="assets/stats/bucket.png" :alt="$t('bucket')"/></th><td><span class="resultBold">{{results.bucketSunk}}</span></td></tr>
 							<tr v-show="results.damecon"><th><img src="assets/items/14.png" class="iconSlotitem" :alt="$t('repair_team')"/></th><td><span class="resultBold">{{results.dameconSunk}}</span></td></tr>
 							<tr v-show="results.underway"><th><img src="assets/items/35.png" class="iconSlotitem" :alt="$t('underway_resupply')"/></th><td><span class="resultBold">{{results.underwaySunk}}</span></td></tr>
-							<tr><th><img src="assets/stats/fp.png" :alt=""/></th><td><span class="resultBold">{{results.actionsSunk}}</span></td></tr>	
-						</table>
+							</table>
 						</div>
 						<div v-if="settings.resultItems.emptiedPlane">
 							<div>航空機全滅率:</div>
