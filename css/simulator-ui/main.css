@@ -730,3 +730,11 @@ table img {
 		}
 	}
 }
+
+input.int4 {
+	width: 8ex;
+}
+
+.title {
+	white-space: nowrap;
+}

@@ -511,6 +511,16 @@
 							</table></div>
 						</div>
 					</div>
+				
+					<div>
+						<span class="subheader">★マイコスト設定</span>
+						＝ <img src="assets/stats/fuel.png" alt="燃料"> ✕ <input class="int4" type="number" min="0" step="1" v-model="settings.myCostFuel" size="4"/>
+						＋ <img src="assets/stats/ammo.png" alt="弾薬"> ✕ <input class="int4" type="number" min="0" step="1" v-model="settings.myCostAmmo" size="4"/>
+						＋ <img src="assets/stats/steel.png" alt="鋼材"> ✕ <input class="int4" type="number" min="0" step="1" v-model="settings.myCostSteel" size="4"/>
+						＋ <img src="assets/stats/baux.png" alt="ボーキ"> ✕ <input class="int4" type="number" min="0" step="1" v-model="settings.myCostBaux" size="4"/>
+						＋ <img src="assets/stats/bucket.png" alt="バケツ"> ✕ <input class="int4" type="number" min="0" step="1" v-model="settings.myCostBucket" size="4"/>
+						＋ <img src="assets/items/14.png" alt="ダメコン"> ✕ <input class="int4" type="number" min="0" step="1" v-model="settings.myCostDamecon" size="4"/>
+					  </div>
 				</div>
 			</div>
 
@@ -537,6 +547,7 @@
 					<label><input type="checkbox" v-model="settings.resultItems.phases"/>フェーズ発生回数</label>
 					<label><input type="checkbox" v-model="settings.resultItems.actions"/>行動回数</label>
 					<label><input type="checkbox" v-model="settings.resultItems.cost"/>消費コスト</label>
+					<label><input type="checkbox" v-model="settings.resultItems.mycost"/>マイコスト</label>
 					<label><input type="checkbox" v-model="settings.resultItems.emptiedPlane"/>航空機全滅率</label>
 				</div>
 			</div>
@@ -770,6 +781,7 @@
 						<div v-if="settings.resultItems.cost">
 							<div><span class="tooltip" :title="$t('avg_resupply_tooltip')">{{$t('avg_resupply')}}</span>:</div>
 							<table>
+							<tr v-if="settings.resultItems.myCost"><th>★</th><td>{{results.myCostSupply}}</td></tr>
 							<tr><th><img src="assets/stats/fuel.png" :alt="$t('fuel')"/></th><td>{{results.fuelSupply}}</td></tr>
 							<tr><th><img src="assets/stats/ammo.png" :alt="$t('ammo')"/></th><td>{{results.ammoSupply}}</td></tr>
 							<tr><th><img src="assets/stats/baux.png" :alt="$t('baux')"/></th><td>{{results.bauxSupply}}</td></tr>
@@ -779,6 +791,7 @@
 						<div v-if="settings.resultItems.cost">
 							<div>{{$t('avg_repair')}}:</div>
 							<table>
+							<tr v-if="settings.resultItems.mycost"><th>★</th><td>{{results.myCostRepair}}</td></tr>
 							<tr><th><img src="assets/stats/fuel.png" :alt="$t('fuel')"/></th><td>{{results.fuelRepair}}</td></tr>
 							<tr><th><img src="assets/stats/steel.png" :alt="$t('steel')"/></th><td>{{results.steelRepair}}</td></tr>
 							<tr><th><img src="assets/stats/bucket.png" :alt="$t('bucket')"/></th><td>{{results.bucket}}</td></tr>
@@ -794,6 +807,7 @@
 								<img @click="onclickCopyResults('S')" src="assets/stats/content-copy-custom.png" class="copyIcons" :title="$t('copy_to_clipboard')"/>
 							</div>
 							<table>
+							<tr v-if="settings.resultItems.myCost"><th>★</th><td><span class="resultBold">{{results.myCostS}}</span></td></tr>
 							<tr><th><img src="assets/stats/fuel.png" :alt="$t('fuel')"/></th><td><span class="resultBold">{{results.fuelS}}</span></td></tr>
 							<tr><th><img src="assets/stats/ammo.png" :alt="$t('ammo')"/></th><td><span class="resultBold">{{results.ammoS}}</span></td></tr>
 							<tr><th><img src="assets/stats/steel.png" :alt="$t('steel')"/></th><td><span class="resultBold">{{results.steelS}}</span></td></tr>
@@ -812,6 +826,7 @@
 								<img @click="onclickCopyResults('flagsunk')" src="assets/stats/content-copy-custom.png" class="copyIcons" :title="$t('copy_to_clipboard')"/>
 							</div>
 							<table>
+							<tr v-if="settings.resultItems.myCost"><th>★</th><td><span class="resultBold">{{results.myCostSunk}}</span></td></tr>
 							<tr><th><img src="assets/stats/fuel.png" :alt="$t('fuel')"/></th><td><span class="resultBold">{{results.fuelSunk}}</span></td></tr>
 							<tr><th><img src="assets/stats/ammo.png" :alt="$t('ammo')"/></th><td><span class="resultBold">{{results.ammoSunk}}</span></td></tr>
 							<tr><th><img src="assets/stats/steel.png" :alt="$t('steel')"/></th><td><span class="resultBold">{{results.steelSunk}}</span></td></tr>
@@ -840,6 +855,7 @@
 							<img @click="onclickCopyResults('A')" src="assets/stats/content-copy-custom.png" class="copyIcons" :title="$t('copy_to_clipboard')"/>
 						</div>
 						<table>
+						<tr v-if="settings.resultItems.myCost"><th>★</th><td><span class="resultBold">{{results.myCostA}}</span></td></tr>
 						<tr><th><img src="assets/stats/fuel.png" :alt="$t('fuel')"/></th><td><span class="resultBold">{{results.fuelA}}</span></td></tr>
 						<tr><th><img src="assets/stats/ammo.png" :alt="$t('ammo')"/></th><td><span class="resultBold">{{results.ammoA}}</span></td></tr>
 						<tr><th><img src="assets/stats/steel.png" :alt="$t('steel')"/></th><td><span class="resultBold">{{results.steelA}}</span></td></tr>
@@ -858,6 +874,7 @@
 							<img @click="onclickCopyResults('B')" src="assets/stats/content-copy-custom.png" class="copyIcons" :title="$t('copy_to_clipboard')"/>
 						</div>
 						<table>
+						<tr v-if="settings.resultItems.myCost"><th>★</th><td><span class="resultBold">{{results.myCostB}}</span></td></tr>
 						<tr><th><img src="assets/stats/fuel.png" :alt="$t('fuel')"/></th><td><span class="resultBold">{{results.fuelB}}</span></td></tr>
 						<tr><th><img src="assets/stats/ammo.png" :alt="$t('ammo')"/></th><td><span class="resultBold">{{results.ammoB}}</span></td></tr>
 						<tr><th><img src="assets/stats/steel.png" :alt="$t('steel')"/></th><td><span class="resultBold">{{results.steelB}}</span></td></tr>
@@ -876,6 +893,7 @@
 							<img @click="onclickCopyResults('hp')" src="assets/stats/content-copy-custom.png" class="copyIcons" :title="$t('copy_to_clipboard')"/>
 						</div>
 						<table>
+						<tr v-if="settings.resultItems.myCost"><th>★</th><td><span class="resultBold">{{resultsMyCostHPPer}}</span></td></tr>
 						<tr><th><img src="assets/stats/fuel.png" :alt="$t('fuel')"/></th><td><span class="resultBold">{{resultsFuelHPPer}}</span></td></tr>
 						<tr><th><img src="assets/stats/ammo.png" :alt="$t('ammo')"/></th><td><span class="resultBold">{{resultsAmmoHPPer}}</span></td></tr>
 						<tr><th><img src="assets/stats/steel.png" :alt="$t('steel')"/></th><td><span class="resultBold">{{resultsSteelHPPer}}</span></td></tr>
@@ -894,6 +912,7 @@
 							<img @click="onclickCopyResults('tp')" src="assets/stats/content-copy-custom.png" class="copyIcons" :title="$t('copy_to_clipboard')"/>
 						</div>
 						<table>
+						<tr v-if="settings.resultItems.myCost"><th>★</th><td><span class="resultBold">{{resultsMyCostTPPer}}</span></td></tr>
 						<tr><th><img src="assets/stats/fuel.png" :alt="$t('fuel')"/></th><td><span class="resultBold">{{resultsFuelTPPer}}</span></td></tr>
 						<tr><th><img src="assets/stats/ammo.png" :alt="$t('ammo')"/></th><td><span class="resultBold">{{resultsAmmoTPPer}}</span></td></tr>
 						<tr><th><img src="assets/stats/steel.png" :alt="$t('steel')"/></th><td><span class="resultBold">{{resultsSteelTPPer}}</span></td></tr>

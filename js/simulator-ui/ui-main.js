@@ -157,6 +157,13 @@ var UI_MAIN = Vue.createApp({
 			balloonOppoAirFlat: SIMCONSTS.balloonOppoAirFlat.slice(),
 			balloonOppoLBASMod: SIMCONSTS.balloonOppoLBASMod.slice(),
 			balloonOppoLBASFlat: SIMCONSTS.balloonOppoLBASFlat.slice(),
+
+			myCostFuel: 1,
+			myCostAmmo: 1,
+			myCostSteel: 1,
+			myCostBaux: 1,
+			myCostBucket: 200,
+			myCostDamecon: 1000,
 			
 			resultItems: {
 			  finalRank: true,
@@ -172,6 +179,7 @@ var UI_MAIN = Vue.createApp({
 				phases: true,
 				actions: true,
 				cost: true,
+				myCost: true,
 				emptiedPlane: true,
 			}
 		},
@@ -220,17 +228,17 @@ var UI_MAIN = Vue.createApp({
 			chuhaE1: [], chuhaE2: [], chuhaE3: [], chuhaE4: [], chuhaE5: [], chuhaE6: [],
 			dameconE1: [], dameconE2: [], dameconE3: [], dameconE4: [], dameconE5: [], dameconE6: [],
 			sunkFE1: [], sunkFE2: [], sunkFE3: [], sunkFE4: [], sunkFE5: [], sunkFE6: [],
-			fuelSupply: 0, ammoSupply: 0, bauxSupply: 0,
-			fuelRepair: 0, steelRepair: 0, bucket: 0, damecon: 0, underway: 0,
-			fuelS: 0, ammoS: 0, steelS: 0, bauxS: 0, bucketS: 0, dameconS: 0, underwayS: 0,
-			fuelSunk: 0, ammoSunk: 0, steelSunk: 0, bauxSunk: 0, bucketSunk: 0, dameconSunk: 0, underwaySunk: 0,
+			myCostSupply: 0, fuelSupply: 0, ammoSupply: 0, bauxSupply: 0,
+			myCostRepair: 0, fuelRepair: 0, steelRepair: 0, bucket: 0, damecon: 0, underway: 0,
+			myCostS: 0, fuelS: 0, ammoS: 0, steelS: 0, bauxS: 0, bucketS: 0, dameconS: 0, underwayS: 0,
+			myCostSunk: 0, fuelSunk: 0, ammoSunk: 0, steelSunk: 0, bauxSunk: 0, bucketSunk: 0, dameconSunk: 0, underwaySunk: 0,
 			emptiedPlane: 0, emptiedLBAS: 0,
 			fcfUsed: 0, nodeReached: [], canAdvanceAfter: 0,
 			showMore: false,
-			fuelA: 0, ammoA: 0, steelA: 0, bauxA: 0, bucketA: 0, dameconA: 0, underwayA: 0,
-			fuelB: 0, ammoB: 0, steelB: 0, bauxB: 0, bucketB: 0, dameconB: 0, underwayB: 0,
-			fuelHP: 0, ammoHP: 0, steelHP: 0, bauxHP: 0, bucketHP: 0, dameconHP: 0, underwayHP: 0,
-			fuelTP: 0, ammoTP: 0, steelTP: 0, bauxTP: 0, bucketTP: 0, dameconTP: 0, underwayTP: 0,
+			myCostA: 0, fuelA: 0, ammoA: 0, steelA: 0, bauxA: 0, bucketA: 0, dameconA: 0, underwayA: 0,
+			myCostB: 0, fuelB: 0, ammoB: 0, steelB: 0, bauxB: 0, bucketB: 0, dameconB: 0, underwayB: 0,
+			myCostHP: 0, fuelHP: 0, ammoHP: 0, steelHP: 0, bauxHP: 0, bucketHP: 0, dameconHP: 0, underwayHP: 0,
+			myCostTP: 0, fuelTP: 0, ammoTP: 0, steelTP: 0, bauxTP: 0, bucketTP: 0, dameconTP: 0, underwayTP: 0,
 			perHPRes: 1, perTPRes: 1,
 			totalActions: 0, actions: [],
 			totalTorpedo: 0, torpedo: [], 
@@ -429,6 +437,9 @@ var UI_MAIN = Vue.createApp({
 			return this.isRunningWatch ? {} : this.watchFound ? { 'color': 'green' } : { 'color': 'red' };
 		},
 		
+		resultsMyCostHPPer: function() {
+			return Math.round(1000*this.results.perHPRes*this.results.myCostHP)/1000;
+		},
 		resultsFuelHPPer: function() {
 			return Math.round(1000*this.results.perHPRes*this.results.fuelHP)/1000;
 		},
@@ -449,6 +460,9 @@ var UI_MAIN = Vue.createApp({
 		},
 		resultsUnderwayHPPer: function() {
 			return Math.round(1000*this.results.perHPRes*this.results.underwayHP)/1000;
+		},
+		resultsMyCostTPPer: function() {
+			return Math.round(1000*this.results.perTPRes*this.results.myCostTP)/1000;
 		},
 		resultsFuelTPPer: function() {
 			return Math.round(1000*this.results.perTPRes*this.results.fuelTP)/1000;
@@ -604,77 +618,79 @@ var UI_MAIN = Vue.createApp({
 				totalTorpedo += this.results.torpedo[i];
 				totalNBs += this.results.NBs[i];
 			}
+		
+			const fuelSupply = resultSim.totalFuelS;
+			this.results.fuelSupply = formatNum(fuelSupply / totalNum);
+			
+			const ammoSupply = resultSim.totalAmmoS;
+			this.results.ammoSupply = formatNum(ammoSupply / totalNum);
+			
+			const bauxSupply = resultSim.totalBauxS;
+			this.results.bauxSupply = formatNum(bauxSupply / totalNum);
 
-			this.results.fuelSupply = formatNum(resultSim.totalFuelS / totalNum);
-			this.results.ammoSupply = formatNum(resultSim.totalAmmoS / totalNum);
-			this.results.bauxSupply = formatNum(resultSim.totalBauxS / totalNum);
-			this.results.fuelRepair = formatNum(resultSim.totalFuelR / totalNum);
-			this.results.steelRepair = formatNum(resultSim.totalSteelR / totalNum);
-			this.results.bucket = formatNum(resultSim.totalBuckets / totalNum);
-			this.results.damecon = formatNum(resultSim.totalDamecon / totalNum);
-			this.results.underway = formatNum(resultSim.totalUnderway / totalNum);
-			this.results.totalActions = formatNum(totalActions);
-			this.results.totalTorpedo = formatNum(totalTorpedo);
-			this.results.totalNBs = formatNum(totalNBs);
+			const myCostSupply =
+				fuelSupply * this.settings.myCostFuel +
+				ammoSupply * this.settings.myCostAmmo +  
+				bauxSupply * this.settings.myCostBaux;
+			this.results.myCostSupply = formatNum(myCostSupply / totalNum);
 			
-      const rateGetResource = RESOURCENODE < resultSim.nodes.length ? this.results.nodeReached[RESOURCENODE] : this.results.canAdvanceAfter;
+			const fuelRepair = resultSim.totalFuelR;
+			this.results.fuelRepair = formatNum(fuelRepair / totalNum);
+			
+			const steelRepair = resultSim.totalSteelR;
+			this.results.steelRepair = formatNum(steelRepair / totalNum);
+			
+			const myCostRepair =
+				fuelRepair * this.settings.myCostFuel +  
+				steelRepair * this.settings.myCostSteel;
+			this.results.myCostRepair = formatNum(myCostRepair);
+			
+			const bucket = resultSim.totalBuckets;
+			this.results.bucket = formatNum(bucket / totalNum);
+			
+			const damecon = resultSim.totalDamecon;
+			this.results.damecon = formatNum(damecon / totalNum);
+			
+			const underway = resultSim.totalUnderway;
+			this.results.underway = formatNum(underway / totalNum);
+			
+      const rateGetResource = RESOURCENODE < resultSim.nodes.length ? resultSim.nodes[RESOURCENODE].num : resultSim.totalCanAdvanceAfter;
+			const fuel = fuelSupply + fuelRepair - GETFUEL * rateGetResource;
+			const ammo = ammoSupply - GETAMMO * rateGetResource;
+			const steel = steelRepair - GETSTEAL * rateGetResource;
+			const baux = bauxSupply - GETBAUX * rateGetResource;
+			const myCost = 
+				fuel * this.settings.myCostFuel +  
+				ammo * this.settings.myCostAmmo +  
+				steel * this.settings.myCostSteel +  
+				baux * this.settings.myCostBaux +
+				bucket * this.settings.myCostBucket +
+				damecon * this.settings.myCostDamecon;
 
-			let rateS = nodeLast.ranks.S / totalNum;
-			this.results.fuelS = formatNum(((resultSim.totalFuelS + resultSim.totalFuelR) / totalNum - GETFUEL * rateGetResource) / rateS);
-			this.results.ammoS = formatNum(((resultSim.totalAmmoS) / totalNum - GETAMMO * rateGetResource) / rateS);
-			this.results.steelS = formatNum(((resultSim.totalSteelR) / totalNum - GETSTEAL * rateGetResource) / rateS);
-			this.results.bauxS = formatNum(((resultSim.totalBauxS) / totalNum - GETBAUX * rateGetResource) / rateS);
-			this.results.bucketS = formatNum((resultSim.totalBuckets) / totalNum / rateS);
-			this.results.dameconS = formatNum((resultSim.totalDamecon) / totalNum / rateS);
-			this.results.underwayS = formatNum((resultSim.totalUnderway) / totalNum / rateS);
-			
-			let rateA = (nodeLast.ranks.S + nodeLast.ranks.A) / totalNum;
-			this.results.fuelA = formatNum(((resultSim.totalFuelS + resultSim.totalFuelR) / totalNum - GETFUEL * rateGetResource) / rateA);
-			this.results.ammoA = formatNum(((resultSim.totalAmmoS) / totalNum - GETAMMO * rateGetResource) / rateA);
-			this.results.steelA = formatNum(((resultSim.totalSteelR) / totalNum - GETSTEAL * rateGetResource) / rateA);
-			this.results.bauxA = formatNum(((resultSim.totalBauxS) / totalNum - GETBAUX * rateGetResource) / rateA);
-			this.results.bucketA = formatNum((resultSim.totalBuckets) / totalNum / rateA);
-			this.results.dameconA = formatNum((resultSim.totalDamecon) / totalNum / rateA);
-			this.results.underwayA = formatNum((resultSim.totalUnderway) / totalNum / rateA);
-			
-			let rateB = (nodeLast.ranks.S + nodeLast.ranks.A + nodeLast.ranks.B) / totalNum;
-			this.results.fuelB = formatNum(((resultSim.totalFuelS + resultSim.totalFuelR) / totalNum - GETFUEL * rateGetResource) / rateB);
-			this.results.ammoB = formatNum(((resultSim.totalAmmoS) / totalNum - GETAMMO * rateGetResource) / rateB);
-			this.results.steelB = formatNum(((resultSim.totalSteelR) / totalNum - GETSTEAL * rateGetResource) / rateB);
-			this.results.bauxB = formatNum(((resultSim.totalBauxS) / totalNum - GETBAUX * rateGetResource) / rateB);
-			this.results.bucketB = formatNum((resultSim.totalBuckets) / totalNum / rateB);
-			this.results.dameconB = formatNum((resultSim.totalDamecon) / totalNum / rateB);
-			this.results.underwayB = formatNum((resultSim.totalUnderway) / totalNum / rateB);
-			
-			this.results.fuelHP = (resultSim.totalFuelS + resultSim.totalFuelR - GETFUEL * rateGetResource * totalNum) / resultSim.totalGaugeDamage;
-			this.results.ammoHP = (resultSim.totalAmmoS - GETAMMO * rateGetResource * totalNum) / resultSim.totalGaugeDamage;
-			this.results.steelHP = (resultSim.totalSteelR - GETSTEAL * rateGetResource * totalNum) / resultSim.totalGaugeDamage;
-			this.results.bauxHP = (resultSim.totalBauxS - GETBAUX * rateGetResource * totalNum) / resultSim.totalGaugeDamage;
-			this.results.bucketHP = (resultSim.totalBuckets) / resultSim.totalGaugeDamage;
-			this.results.dameconHP = (resultSim.totalDamecon) / resultSim.totalGaugeDamage;
-			this.results.underwayHP = (resultSim.totalUnderway) / resultSim.totalGaugeDamage;
-			
-			this.results.fuelTP = (resultSim.totalFuelS + resultSim.totalFuelR - GETFUEL * rateGetResource * totalNum) / resultSim.totalTransport;
-			this.results.ammoTP = (resultSim.totalAmmoS - GETAMMO * rateGetResource * totalNum) / resultSim.totalTransport;
-			this.results.steelTP = (resultSim.totalSteelR - GETSTEAL * rateGetResource * totalNum) / resultSim.totalTransport;
-			this.results.bauxTP = (resultSim.totalBauxS - GETBAUX * rateGetResource * totalNum) / resultSim.totalTransport;
-			this.results.bucketTP = (resultSim.totalBuckets) / resultSim.totalTransport;
-			this.results.dameconTP = (resultSim.totalDamecon) / resultSim.totalTransport;
-			this.results.underwayTP = (resultSim.totalUnderway) / resultSim.totalTransport;
-			
+			const resources = ['myCost', 'fuel', 'ammo', 'steel', 'baux', 'bucket', 'damecon', 'underway'];
+			const resourceValues = { myCost, fuel, ammo, steel, baux, bucket, damecon, underway };
+			const rates = {
+				S: nodeLast.ranks.S,
+				Sunk: nodeLast.flagsunk,
+				A: (nodeLast.ranks.S + nodeLast.ranks.A),
+				B: (nodeLast.ranks.S + nodeLast.ranks.A + nodeLast.ranks.B),
+				HP: resultSim.totalGaugeDamage,
+				TP: resultSim.totalTransport,
+			};
+			resources.forEach(resource => {
+				for (const rateType in rates) {
+					const rate = rates[rateType];
+					this.results[`${resource}${rateType}`] = formatNum(resourceValues[resource] / rate);
+				}
+			});
+
 			this.results.fcfUsed = formatNum(resultSim.totalFCFUsed / totalNum);
 			this.results.emptiedPlane = formatNum(resultSim.totalEmptiedPlanes / totalNum);
 			this.results.emptiedLBAS = formatNum(resultSim.totalEmptiedLBAS / totalNum);
 			
-			let rateSunk = nodeLast.flagsunk / totalNum;
-			this.results.fuelSunk = formatNum(((resultSim.totalFuelS + resultSim.totalFuelR) / totalNum - GETFUEL * rateGetResource) / rateSunk);
-			this.results.ammoSunk = formatNum(((resultSim.totalAmmoS) / totalNum - GETAMMO * rateGetResource) / rateSunk);
-			this.results.steelSunk = formatNum(((resultSim.totalSteelR) / totalNum - GETSTEAL * rateGetResource) / rateSunk);
-			this.results.bauxSunk = formatNum(((resultSim.totalBauxS) / totalNum - GETBAUX * rateGetResource) / rateSunk);
-			this.results.bucketSunk = formatNum((resultSim.totalBuckets) / totalNum / rateSunk);
-			this.results.dameconSunk = formatNum((resultSim.totalDamecon) / totalNum / rateSunk);
-			this.results.underwaySunk = formatNum((resultSim.totalUnderway) / totalNum / rateSunk);
-			
+			this.results.totalActions = formatNum(totalActions);
+			this.results.totalTorpedo = formatNum(totalTorpedo);
+			this.results.totalNBs = formatNum(totalNBs);
 			this.results.totalPhaseDeads = resultSim.totalPhaseDeads.map(x => formatNum(x / totalNum));
 
 			this.resultsTab = 'latest';
