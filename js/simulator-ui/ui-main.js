@@ -269,7 +269,8 @@ var UI_MAIN = Vue.createApp({
 		
                 nlFleetPreset: {
                     currentId: 0,
-                    currentName: ''
+                    currentName: '',
+                    fleets: [ { id: 0, name: 'a'} ]
                 },
 	}),
 	mounted: function() {
@@ -390,6 +391,11 @@ var UI_MAIN = Vue.createApp({
 					}
 				}
 			}
+                        
+                        if (localStorage.nlFleetPreset) {
+                            
+                        }
+                        
 			window.location.hash = '';
 			if (!dataSave && localStorage.sim2) {
 				dataSave = JSON.parse(localStorage.sim2);
