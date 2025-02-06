@@ -265,8 +265,12 @@ var UI_MAIN = Vue.createApp({
 		resultsTab: 'latest',
 
 		tinyURL: '',
-		loadURLNotice: ''
+		loadURLNotice: '',
 		
+                nlFleetPreset: {
+                    currentId: 0,
+                    currentName: ''
+                },
 	}),
 	mounted: function() {
 		this.$i18n.locale = localStorage.sim2_lang || 'ja';
@@ -1217,6 +1221,16 @@ ${t('results.buckets')}:	${this.resultsBucketTPPer}`;
 			  this.results = JSON.parse(this.savedResults[index].results);
 			}
 		},
+                
+                onclickNLFleetPresetLoad: function () {
+                    console.log(this.nlFleetPreset);
+                },
+                onclickNLFleetPresetSave: function () {
+                    console.log("test");
+                },
+                onclickNLFleetPresetDelete: function () {
+                    console.log("test");
+                },
 	},
 }).component('vbattle',{
 	props: ['battle','candelete','isboss'],

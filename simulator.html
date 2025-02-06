@@ -83,13 +83,12 @@
 			</div>
 			<h2>{{$t('fleets')}}</h2>
                         <div id="nlFleetPreset">
-                            <input type="text" placeholder="艦隊名/メモ" />
-                            <select>
-                                <option value="">艦隊プリセット</option>
+                            <input type="text" v-model="nlFleetPreset.currentName" placeholder="艦隊名/メモ" />
+                            <select v-model="nlFleetPreset.currentId">
                             </select>
-                            <button @click="onclickNLFleetPresetLoad">呼び出し</button>
-                            <button>登録</button>
-                            <button>削除</button>
+                            <button @click="onclickNLFleetPresetLoad">展開</button>
+                            <button @click="onclickNLFleetPresetSave">記録</button>
+                            <button @click="onclickNLFleetPresetDelete">削除</button>
                         </div>
 			<div class="fleetSection">
 				<div class="scrollAnchor"><div ref="divPlayerMainScroll"></div></div>
@@ -2133,7 +2132,7 @@
 	<script src="js/simulator-ui/selector.js"></script>
 	<script src="js/simulator-ui/convert.js"></script>
 	<script src="js/simulator-ui/sim-interface.js"></script>
-	<script src="js/simulator-ui/ui-main.js"></script>
 	<script src="js/simulator-ui/nelie.js"></script>
+	<script src="js/simulator-ui/ui-main.js"></script>
 </body>
 </html>
