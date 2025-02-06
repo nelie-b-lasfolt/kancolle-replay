@@ -82,6 +82,15 @@
 				<div v-if="loadURLNotice">{{loadURLNotice}}</div>
 			</div>
 			<h2>{{$t('fleets')}}</h2>
+                        <div id="nlFleetPreset">
+                            <input type="text" placeholder="艦隊名/メモ" />
+                            <select>
+                                <option value="">艦隊プリセット</option>
+                            </select>
+                            <button @click="onclickNLFleetPresetLoad">呼び出し</button>
+                            <button>登録</button>
+                            <button>削除</button>
+                        </div>
 			<div class="fleetSection">
 				<div class="scrollAnchor"><div ref="divPlayerMainScroll"></div></div>
 				<vfleet :fleet="fleetFMain" :fleetname="$t('main_fleet')"></vfleet>
