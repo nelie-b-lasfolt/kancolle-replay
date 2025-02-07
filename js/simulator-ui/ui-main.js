@@ -267,10 +267,12 @@ var UI_MAIN = Vue.createApp({
 		tinyURL: '',
 		loadURLNotice: '',
 		
-                nlFleetPreset: {
+                nlBattlePreset: {
+                    selectedIndex: 0,
                     currentId: 0,
                     currentName: '',
-                    fleets: [ { id: 0, name: 'a'} ]
+                    battles: [],
+                    nextId: 1
                 },
 	}),
 	mounted: function() {
@@ -391,10 +393,6 @@ var UI_MAIN = Vue.createApp({
 					}
 				}
 			}
-                        
-                        if (localStorage.nlFleetPreset) {
-                            
-                        }
                         
 			window.location.hash = '';
 			if (!dataSave && localStorage.sim2) {
@@ -1228,14 +1226,64 @@ ${t('results.buckets')}:	${this.resultsBucketTPPer}`;
 			}
 		},
                 
-                onclickNLFleetPresetLoad: function () {
-                    console.log(this.nlFleetPreset);
+                onchangeNLBattlePreset: function(event) {
+                    const selectedIndex = event.target.selectedIndex;
+                    this.nlBattlePreset.selectedIndex = selectedIndex;
                 },
-                onclickNLFleetPresetSave: function () {
-                    console.log("test");
+                onclickNLBattlePresetLoad: function() {
+                    console.log(JSON.stringify(this.battles));
+                    const nlBattlePreset = this.nlBattlePreset;
+                    
+                    if (nlBattlePreset.battles.length > nlBattlePreset.currentId) {
+                        const battle = nlBattlePreset.battles[nlBattlePreset.currentId];
+                        nlBattlePreset.currentId = battle.id;
+                        nlBattlePreset.currentName = battle.name;
+
+                        const battleData = JSON.parse(localStorage["nlBattlePresetData" + nlBattlePreset.currentId]);
+                        if (battleData) {
+                            this.battles = battleData.battles;
+                        }
+                    }
                 },
-                onclickNLFleetPresetDelete: function () {
-                    console.log("test");
+                onclickNLBattlePresetNewSave: function() {
+                    const nlBattlePreset = this.nlBattlePreset;
+                    nlBattlePreset.currentId = nlBattlePreset.nextId;
+                    const battle = {
+                        id: nlBattlePreset.currentId,
+                        name: nlBattlePreset.currentName
+                    };
+                    nlBattlePreset.battles.splice(nlBattlePreset.selectedIndex, 0, battle);
+                    nlBattlePreset.nextId++;
+                    localStorage.nlBattlePreset =  JSON.stringify(nlBattlePreset);
+                    
+                    const battleData = {
+                        battles : this.battles
+                    };
+                    localStorage["nlBattlePresetData" + nlBattlePreset.currentId] = JSON.stringify(battleData);
+                },
+                onclickNLBattlePresetSave: function() {
+                    const nlBattlePreset = this.nlBattlePreset;
+                    const battle = {
+                        id: nlBattlePreset.currentId,
+                        name: nlBattlePreset.currentName
+                    };
+                    nlBattlePreset.battles[nlBattlePreset.selectedIndex] = battle;
+                    localStorage.nlBattlePreset =  JSON.stringify(nlBattlePreset);
+                    
+                    const battleData = {
+                        battles : this.battles
+                    };
+                    localStorage["nlBattlePresetData" + nlBattlePreset.currentId] = JSON.stringify(battleData);
+                },
+                onclickNLBattlePresetDelete: function() {
+                    const nlBattlePreset = this.nlBattlePreset;
+                    
+                    if (nlBattlePreset.battles.length > nlBattlePreset.currentId) {
+                        nlBattlePreset.battles.splice(nlBattlePreset.selectedIndex, 1);
+                        localStorage.nlBattlePreset =  JSON.stringify(nlBattlePreset);
+
+                        localStorage.removeItem("nlBattlePresetData" + nlBattlePreset.currentId);
+                    }
                 },
 	},
 }).component('vbattle',{

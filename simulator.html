@@ -28,7 +28,7 @@
 <body style="display:none">
 	<div id="divMain">
 		<div id="divNavBar" :style="{'pointer-events':isDragging?'none':''}">
-			<div><span class="title" :title="$t('kancolle_sortie_simulator_sub')">KanColle Sortie Simulator R</span></div>
+			<div><span class="title" :title="$t('kancolle_sortie_simulator_sub')">KanColle Sortie Simulator R ver.Nelie</span></div>
 			<div id="divNavButtons">
 				<div @mouseover="showDropdownPlayer=true" @mouseout="showDropdownPlayer=false">
 					<div class="navButton" @click="onclickNavButton('divPlayerScroll')">{{$t('fleets')}}</div>
@@ -82,15 +82,6 @@
 				<div v-if="loadURLNotice">{{loadURLNotice}}</div>
 			</div>
 			<h2>{{$t('fleets')}}</h2>
-                        <div id="nlFleetPreset">
-                            <input type="text" v-model="nlFleetPreset.currentName" placeholder="艦隊名/メモ" />
-                            <select v-model="nlFleetPreset.currentId">
-                                <option v-for="item in nlFleetPreset.fleets" v-bind:value="item.id">{{item.name}}</option>
-                            </select>
-                            <button @click="onclickNLFleetPresetLoad">展開</button>
-                            <button @click="onclickNLFleetPresetSave">記録</button>
-                            <button @click="onclickNLFleetPresetDelete">削除</button>
-                        </div>
 			<div class="fleetSection">
 				<div class="scrollAnchor"><div ref="divPlayerMainScroll"></div></div>
 				<vfleet :fleet="fleetFMain" :fleetname="$t('main_fleet')"></vfleet>
@@ -146,6 +137,17 @@
 		<div class="scrollAnchor"><div ref="divBattlesScroll"></div></div>
 		<div id="divBattles">
 			<h2>{{$t('battles')}}</h2>
+                        <div id="nlBattlePreset">
+                            <input type="text" v-model="nlBattlePreset.currentName" placeholder="敵編成名/メモ" />
+                            <select v-model="nlBattlePreset.currentId" change="onchangeNLBattlePreset($event)">
+                                <option v-for="item in nlBattlePreset.battles" v-bind:value="item.id">{{item.name}}</option>
+                            </select>
+                            <button @click="onclickNLBattlePresetLoad">展開</button>
+                            <button @click="onclickNLBattlePresetNewSave">新規記録</button>
+                            &nbsp;
+                            <button @click="onclickNLBattlePresetSave">上書き記録</button>
+                            <button @click="onclickNLBattlePresetDelete">削除</button>
+                        </div>
 			<div class="battleNext">
 				<input type="button" :value="$t('insert_node')" @click="onclickInsertBattle(0)" />
 			</div>
@@ -1178,6 +1180,17 @@
 	
 	<div id="divFleetEditorTemp"><div id="divFleetEditor" class="fleetEditor">
 	<div v-show="active">
+                <div id="nlFleetPreset" v-if="fleet.isPlayer || fleet.isSupport">
+                    <input type="text" v-model="nlFleetPreset.currentName" placeholder="艦隊名/メモ" />
+                    <select v-model="nlFleetPreset.currentId" @change="onchangeNLFleetPreset($event)">
+                        <option v-for="item in nlFleetPreset.fleets" v-bind:value="item.id">{{item.name}}</option>
+                    </select>
+                    <button @click="onclickNLFleetPresetLoad">展開</button>
+                    <button @click="onclickNLFleetPresetNewSave">新規記録</button>
+                    &nbsp;
+                    <button @click="onclickNLFleetPresetSave">上書き記録</button>
+                    <button @click="onclickNLFleetPresetDelete">削除</button>
+                </div>
 		<div id="divFleetEditorImport">
 			<div class="headerImport">{{$t('load_options')}}:</div>
 			<div>

@@ -400,6 +400,14 @@ var UI_FLEETEDITOR = Vue.createApp({
 		fleet: FLEET_MODEL.getBlankFleet(),
 
 		initialMorale: 49,
+		
+                nlFleetPreset: {
+                    selectedIndex: 0,
+                    currentId: 0,
+                    currentName: '',
+                    fleets: [],
+                    nextId: 1
+                },
 	}),
 	mounted: function() {
 		for (let world in ENEMYCOMPS) {
@@ -415,6 +423,24 @@ var UI_FLEETEDITOR = Vue.createApp({
 				options: options,
 			});
 		}
+                  
+            
+                if (localStorage.nlFleetPreset) {
+                    const nlFleetPreset = this.nlFleetPreset;
+                    const storageNLFleetPreset = JSON.parse(localStorage.nlFleetPreset);
+                    const storageFleets = storageNLFleetPreset.fleets;
+                    if (storageFleets && Array.isArray(storageFleets)) {
+                        const fleets = [];
+                        storageFleets.forEach((storageFleet) => {
+                            fleets.push({
+                                id: storageFleet.id,
+                                name: storageFleet.name
+                            });
+                        });
+                        nlFleetPreset.fleets = fleets;
+                    }
+                    nlFleetPreset.nextId = (localStorage.nlFleetPreset.nextId) ? localStorage.nlFleetPreset.nextId : 1;
+                }
 	},
 	computed: {
 		numShipShow: function() {
@@ -835,6 +861,68 @@ var UI_FLEETEDITOR = Vue.createApp({
 		receiveCloseEquip: function() {
 			UI_FLEETEDITOR.refocusEquip();
 		},
+                
+                onchangeNLFleetPreset: function (event) {
+                    const selectedIndex = event.target.selectedIndex;
+                    console.log(selectedIndex);
+                    this.nlFleetPreset.selectedIndex = selectedIndex;
+                },
+                
+                onclickNLFleetPresetLoad: function () {
+                    const nlFleetPreset = this.nlFleetPreset;
+                    
+                    if (nlFleetPreset.fleets.length > nlFleetPreset.currentId) {
+                        const fleet = nlFleetPreset.fleets[nlFleetPreset.currentId];
+                        nlFleetPreset.currentId = fleet.id;
+                        nlFleetPreset.currentName = fleet.name;
+
+                        const fleetData = JSON.parse(localStorage["nlFleetPresetData" + nlFleetPreset.currentId]);
+                        if (fleetData) {
+                            this.loadCode = fleetData.text;
+                            this.onclickLoadCode();
+                        }
+                    }
+                },
+                onclickNLFleetPresetSave: function () {
+                    const nlFleetPreset = this.nlFleetPreset;
+                    const fleet = {
+                        id: nlFleetPreset.currentId,
+                        name: nlFleetPreset.currentName
+                    };
+                    nlFleetPreset.fleets[nlFleetPreset.selectedIndex] = fleet;
+                    localStorage.nlFleetPreset =  JSON.stringify(nlFleetPreset);
+                    
+                    const fleetData = {
+                        text : this.loadCode
+                    };
+                    localStorage["nlFleetPresetData" + nlFleetPreset.currentId] = JSON.stringify(fleetData);
+                },
+                onclickNLFleetPresetNewSave: function () {
+                    const nlFleetPreset = this.nlFleetPreset;
+                    nlFleetPreset.currentId = nlFleetPreset.nextId;
+                    const fleet = {
+                        id: nlFleetPreset.currentId,
+                        name: nlFleetPreset.currentName
+                    };
+                    nlFleetPreset.fleets.splice(nlFleetPreset.selectedIndex, 0, fleet);
+                    nlFleetPreset.nextId++;
+                    localStorage.nlFleetPreset =  JSON.stringify(nlFleetPreset);
+                    
+                    const fleetData = {
+                        text : this.loadCode
+                    };
+                    localStorage["nlFleetPresetData" + nlFleetPreset.currentId] = JSON.stringify(fleetData);
+                },
+                onclickNLFleetPresetDelete: function () {
+                    const nlFleetPreset = this.nlFleetPreset;
+                    
+                    if (nlFleetPreset.fleets.length > nlFleetPreset.currentId) {
+                        nlFleetPreset.fleets.splice(nlFleetPreset.selectedIndex, 1);
+                        localStorage.nlFleetPreset =  JSON.stringify(nlFleetPreset);
+
+                        localStorage.removeItem("nlFleetPresetData" + nlFleetPreset.currentId);
+                    }
+                },
 	},
 }).component('vmodal',COMMON.CMP_MODAL).use(COMMON.i18n).mount('#divFleetEditor');
 
